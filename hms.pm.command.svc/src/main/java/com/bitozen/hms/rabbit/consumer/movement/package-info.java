@@ -1,0 +1,1 @@
+package com.bitozen.hms.rabbit.consumer.movement;
