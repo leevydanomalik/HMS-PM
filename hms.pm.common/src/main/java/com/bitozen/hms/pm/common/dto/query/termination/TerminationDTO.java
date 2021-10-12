@@ -1,35 +1,26 @@
-package com.bitozen.hms.projection.termination;
+package com.bitozen.hms.pm.common.dto.query.termination;
 
-import com.bitozen.hms.common.dto.CreationalSpecificationDTO;
 import com.bitozen.hms.common.dto.GenericAccessTokenDTO;
 import com.bitozen.hms.common.dto.MetadataDTO;
 import com.bitozen.hms.common.dto.share.BizparOptimizeDTO;
 import com.bitozen.hms.common.dto.share.EmployeeOptimizeDTO;
 import com.bitozen.hms.pm.common.TerminationState;
 import com.bitozen.hms.pm.common.TerminationStatus;
-import com.bitozen.hms.pm.common.dto.query.termination.BAGPensionDTO;
-import com.bitozen.hms.pm.common.dto.query.termination.TerminationDocumentDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-
-@Document(value = "trx_termination")
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-public class TerminationEntryProjection {
+public class TerminationDTO implements Serializable{
     
-    @Id
-    private Long id;
     private String tmnID;
     private String tmnNotes;
     private String bpjsHTDocNumber;
@@ -44,11 +35,11 @@ public class TerminationEntryProjection {
     private String skDocNumber;
     private String skdtDocNumber;
     private List<TerminationDocumentDTO> tmnDocs;
-    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date tmnEffectiveDate;
-    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date tmnReqDate;
-    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date tmnPphEndDate;
     private BizparOptimizeDTO tmnReason;
     private TerminationState tmnState;
@@ -57,9 +48,12 @@ public class TerminationEntryProjection {
     private MetadataDTO metadata;
     private GenericAccessTokenDTO token;
     
-    private CreationalSpecificationDTO creational;
+    private String createdBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "GMT+7")
+    private Date createdDate;
+    private String updatedBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "GMT+7")
+    private Date updatedDate;
     private String recordID;
-    
-    
     
 }
