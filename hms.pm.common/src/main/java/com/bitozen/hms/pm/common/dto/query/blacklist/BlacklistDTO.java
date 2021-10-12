@@ -1,4 +1,4 @@
-package com.bitozen.hms.projection.blacklist;
+package com.bitozen.hms.pm.common.dto.query.blacklist;
 
 import com.bitozen.hms.common.dto.CreationalSpecificationDTO;
 import com.bitozen.hms.common.dto.GenericAccessTokenDTO;
@@ -7,32 +7,26 @@ import com.bitozen.hms.common.dto.share.BizparOptimizeDTO;
 import com.bitozen.hms.common.dto.share.EmployeeOptimizeDTO;
 import com.bitozen.hms.pm.common.BlacklistState;
 import com.bitozen.hms.pm.common.BlacklistStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import java.io.Serializable;
 import java.util.Date;
 
-@Document(value = "trx_blacklist")
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-public class BlacklistEntryProjection {
-
-    @Id
-    private Long id;
+public class BlacklistDTO implements Serializable {
 
     private String blacklistID;
     private String blacklistSPKNumber;
-    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date blacklistStartDate;
-    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date blacklistEndDate;
     private String blacklistNotes;
     private BizparOptimizeDTO blacklistType;
@@ -48,6 +42,11 @@ public class BlacklistEntryProjection {
     private MetadataDTO metadata;
     private GenericAccessTokenDTO token;
 
-    private CreationalSpecificationDTO creational;
+    private String createdBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "GMT+7")
+    private Date createdDate;
+    private String updatedBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "GMT+7")
+    private Date updatedDate;
     private String recordID;
 }
