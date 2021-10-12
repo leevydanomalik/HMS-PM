@@ -6,7 +6,7 @@ import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationDeleteCommandDTO;
-import com.bitozen.hms.web.hystrix.Termination.TerminationHystrixCommandService;
+import com.bitozen.hms.web.hystrix.termination.TerminationHystrixCommandService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;

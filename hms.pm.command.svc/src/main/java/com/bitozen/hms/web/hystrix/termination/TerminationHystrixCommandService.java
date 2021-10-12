@@ -1,4 +1,4 @@
-package com.bitozen.hms.web.hystrix.Termination;
+package com.bitozen.hms.web.hystrix.termination;
 
 import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.status.ResponseStatus;

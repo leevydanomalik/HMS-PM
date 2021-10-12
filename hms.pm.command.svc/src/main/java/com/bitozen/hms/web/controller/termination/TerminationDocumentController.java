@@ -3,7 +3,7 @@ package com.bitozen.hms.web.controller.termination;
 import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
-import com.bitozen.hms.web.hystrix.Termination.TerminationDocumentHystrixService;
+import com.bitozen.hms.web.hystrix.termination.TerminationDocumentHystrixService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
