@@ -42,7 +42,7 @@ public class ProlongedIllnessRegistryHystrixQueryService {
 
     @SneakyThrows
     @HystrixCommand(fallbackMethod = "defaultGetProlongedIllnessRegistryByIDFallback")
-    @Cacheable(value = "findOneByProlongedIllnessRegistryIDCache", key = "#p0")
+    @Cacheable(value = "findOneByPiIDCache", key = "#p0")
     public GenericResponseDTO<ProlongedIllnessRegistryDTO> getProlongedIllnessRegistryByID(String piID) {
         try {
             CompletableFuture<ProlongedIllnessRegistryDTO> result = gateway.query(new GetByIDQuery(piID), ProlongedIllnessRegistryDTO.class);
@@ -71,8 +71,8 @@ public class ProlongedIllnessRegistryHystrixQueryService {
 
     @SneakyThrows
     @HystrixCommand(fallbackMethod = "defaultGetAllProlongedIllnessRegistryWebFallback")
-    @Cacheable(value = "getAllProlongedIllnessRegistryWebCache", key = "#p0")
-    public GenericResponseDTO<Map<String, Object>> getProlongedIllnessRegistryForWeb(GetListRequestDTO dto) {
+    @Cacheable(value = "getProlongedIllnessRegistryByAllWebCache", key = "#p0")
+    public GenericResponseDTO<Map<String, Object>> getAllProlongedIllnessRegistryForWeb(GetListRequestDTO dto) {
         try {
             CompletableFuture<List<ProlongedIllnessRegistryDTO>> result = gateway.query(new GetAllForWebQuery(dto), ResponseTypes.multipleInstancesOf(ProlongedIllnessRegistryDTO.class));
             if (result.get() == null || result.get().isEmpty()) {

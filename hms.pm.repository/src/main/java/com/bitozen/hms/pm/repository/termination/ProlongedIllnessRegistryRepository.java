@@ -27,6 +27,6 @@ public interface ProlongedIllnessRegistryRepository extends MongoRepository<Prol
     Page<ProlongedIllnessRegistryEntryProjection> findAllForWeb(String param, String piStatus, Pageable pageable);
 
     @Query(value = "{$or: [{ 'piID' : {$regex: ?0,$options: 'i'}}," +
-            " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]}")
+            " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]}", count=true)
     long countAllForWeb(String param, String piStatus);
 }

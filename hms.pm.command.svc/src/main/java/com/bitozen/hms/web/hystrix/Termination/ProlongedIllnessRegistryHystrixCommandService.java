@@ -60,7 +60,7 @@ public class ProlongedIllnessRegistryHystrixCommandService {
     @HystrixCommand(fallbackMethod = "defaultPostProlongedIllnessRegistryFallback")
     @Caching(
             evict = {
-                    @CacheEvict(value = "findOneByProlongedIllnessRegistryIDCache", allEntries = true),
+                    @CacheEvict(value = "findOneByPiIDCache", allEntries = true),
                     @CacheEvict(value = "getAllProlongedIllnessRegistryWebCache", allEntries = true)
             }
     )
@@ -122,7 +122,7 @@ public class ProlongedIllnessRegistryHystrixCommandService {
     @HystrixCommand(fallbackMethod = "defaultPutProlongedIllnessRegistryFallback")
     @Caching(
             evict = {
-                    @CacheEvict(value = "findOneByProlongedIllnessRegistryIDCache", allEntries = true),
+                    @CacheEvict(value = "findOneByPiIDCache", allEntries = true),
                     @CacheEvict(value = "getAllProlongedIllnessRegistryWebCache", allEntries = true)
             }
     )
@@ -183,7 +183,7 @@ public class ProlongedIllnessRegistryHystrixCommandService {
     @HystrixCommand(fallbackMethod = "defaultDeleteProlongedIllnessRegistryFallback")
     @Caching(
             evict = {
-                    @CacheEvict(value = "findOneByProlongedIllnessRegistryIDCache", allEntries = true),
+                    @CacheEvict(value = "findOneByPiIDCache", allEntries = true),
                     @CacheEvict(value = "getAllProlongedIllnessRegistryWebCache", allEntries = true)
             }
     )

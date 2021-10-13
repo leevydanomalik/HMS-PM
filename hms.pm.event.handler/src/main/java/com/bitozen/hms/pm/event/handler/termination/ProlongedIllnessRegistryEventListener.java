@@ -61,7 +61,6 @@ public class ProlongedIllnessRegistryEventListener {
     @EventHandler
     public void on (ProlongedIllnessRegistryChangeEvent event){
         Optional<ProlongedIllnessRegistryEntryProjection> data = repository.findOneByPiIDAndPiStatus(event.getPiID(), ProlongedIllnessStatus.ACTIVE);
-        data.get().setPiID(event.getPiID());
         data.get().setStartDate(event.getStartDate());
         data.get().setEndDate(event.getEndDate());
         data.get().setDocURL(event.getDocURL());

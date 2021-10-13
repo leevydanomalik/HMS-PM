@@ -79,7 +79,7 @@ public class ProlongedIllnessRegistryQueryController {
         } catch (JsonProcessingException ex) {
             log.info(ex.getMessage());
         }
-        GenericResponseDTO<Map<String, Object>> response = service.getProlongedIllnessRegistryForWeb(dto);
+        GenericResponseDTO<Map<String, Object>> response = service.getAllProlongedIllnessRegistryForWeb(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
