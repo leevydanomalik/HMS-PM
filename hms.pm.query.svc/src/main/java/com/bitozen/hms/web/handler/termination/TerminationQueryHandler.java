@@ -41,7 +41,8 @@ public class TerminationQueryHandler {
     public List<TerminationDTO> getAllTerminationForWeb(GetAllTerminationForWebQuery query){
         Pageable pageable = PageRequest.of(query.getRequest().getOffset(), query.getRequest().getLimit(), Sort.by("creational.createdDate").descending());
         String param = String.valueOf(query.getRequest().getParams().get("param"));
-        Page<TerminationEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"), pageable);
+        List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
+        Page<TerminationEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"),esIDs, pageable);
         if(results.hasContent()){
             return assembler.toDTOs(results.getContent());
         }
@@ -51,7 +52,8 @@ public class TerminationQueryHandler {
     @QueryHandler
     public Integer countTerminationForWeb(CountAllTerminationForWebQuery query) {
         String param = String.valueOf(query.getRequest().getParams().get("param"));
-        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"))));
+        List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
+        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"),esIDs)));
         return count;
     }
     
