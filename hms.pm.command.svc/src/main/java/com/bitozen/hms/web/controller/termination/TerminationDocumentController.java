@@ -36,7 +36,7 @@ public class TerminationDocumentController {
     @Autowired
     private TerminationDocumentHystrixService service;
     
-    @PostMapping("/termination.document.post")
+    @PostMapping("/post.termination.document")
     @CrossOrigin(origins = "*",
             methods = {RequestMethod.POST, RequestMethod.OPTIONS},
             allowedHeaders = {"Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"},

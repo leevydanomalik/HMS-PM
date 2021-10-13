@@ -30,9 +30,10 @@ public class TerminationCreateCommand {
     private String tmnReason;
     private TerminationState tmnState;
     private TerminationStatus tmnStatus;
-    private String tmnPension;
     private String metadata;
     private String token;
+    private String bagPensionSpec;
+    private String bagProlongedIllnessSpec;
     
     private String createdBy;
     private Date createdDate;

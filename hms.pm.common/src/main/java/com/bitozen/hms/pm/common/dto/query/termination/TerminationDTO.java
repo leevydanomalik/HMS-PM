@@ -17,9 +17,8 @@ import lombok.ToString;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
-public class TerminationDTO implements Serializable{
+public class TerminationDTO extends BAGTMNSpec implements Serializable{
     
     private String tmnID;
     private String tmnNotes;
@@ -44,7 +43,6 @@ public class TerminationDTO implements Serializable{
     private BizparOptimizeDTO tmnReason;
     private TerminationState tmnState;
     private TerminationStatus tmnStatus;
-    private BAGPensionDTO tmnPension;
     private MetadataDTO metadata;
     private GenericAccessTokenDTO token;
     
@@ -55,5 +53,38 @@ public class TerminationDTO implements Serializable{
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "GMT+7")
     private Date updatedDate;
     private String recordID;
+
+    public TerminationDTO(String tmnID, String tmnNotes, String bpjsHTDocNumber, String bpjsPensionDocNumber, List<String> docCopies, Boolean isCancelFinalApprove, Boolean isExecuted, Boolean isFinalApprove, String memoDocNumber, EmployeeOptimizeDTO employee, EmployeeOptimizeDTO requestor, String skDocNumber, String skdtDocNumber, List<TerminationDocumentDTO> tmnDocs, Date tmnEffectiveDate, Date tmnReqDate, Date tmnPphEndDate, BizparOptimizeDTO tmnReason, TerminationState tmnState, TerminationStatus tmnStatus, MetadataDTO metadata, GenericAccessTokenDTO token, String createdBy, Date createdDate, String updatedBy, Date updatedDate, String recordID, BAGPensionDTO bagPensionSpec, BAGProlongedIllnessDTO bagProlongedIllnessSpec) {
+        super(bagPensionSpec, bagProlongedIllnessSpec);
+        this.tmnID = tmnID;
+        this.tmnNotes = tmnNotes;
+        this.bpjsHTDocNumber = bpjsHTDocNumber;
+        this.bpjsPensionDocNumber = bpjsPensionDocNumber;
+        this.docCopies = docCopies;
+        this.isCancelFinalApprove = isCancelFinalApprove;
+        this.isExecuted = isExecuted;
+        this.isFinalApprove = isFinalApprove;
+        this.memoDocNumber = memoDocNumber;
+        this.employee = employee;
+        this.requestor = requestor;
+        this.skDocNumber = skDocNumber;
+        this.skdtDocNumber = skdtDocNumber;
+        this.tmnDocs = tmnDocs;
+        this.tmnEffectiveDate = tmnEffectiveDate;
+        this.tmnReqDate = tmnReqDate;
+        this.tmnPphEndDate = tmnPphEndDate;
+        this.tmnReason = tmnReason;
+        this.tmnState = tmnState;
+        this.tmnStatus = tmnStatus;
+        this.metadata = metadata;
+        this.token = token;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.updatedBy = updatedBy;
+        this.updatedDate = updatedDate;
+        this.recordID = recordID;
+    }
+    
+    
     
 }
