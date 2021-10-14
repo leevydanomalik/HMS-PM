@@ -6,6 +6,7 @@ import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationDeleteCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.termination.TerminationStateAndStatusChangeCommandDTO;
 import com.bitozen.hms.web.hystrix.termination.TerminationHystrixCommandService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,6 +82,25 @@ public class TerminationCommandController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @RequestMapping(value = "/command/put.termination.state.and.status",
+            method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GenericResponseDTO<TerminationStateAndStatusChangeCommandDTO>> updateTerminationStateAndStatus(@RequestBody TerminationStateAndStatusChangeCommandDTO dto) {
+        try {
+            log.info(objectMapper.writeValueAsString(
+                    LogOpsUtil.getLogOps(ProjectType.CQRS, "Termination", TerminationCommandController.class.getName(),
+                            httpRequest.getRequestURL() + httpRequest.getRequestURI(),
+                            new Date(), "Command", "Change",
+                            dto.getUpdatedBy(),
+                            dto)));
+        } catch (JsonProcessingException ex) {
+            log.info(ex.getMessage());
+        }
+        GenericResponseDTO<TerminationStateAndStatusChangeCommandDTO> response = service.changeTerminationStateAndStatus(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    
     @RequestMapping(value = "/command/delete.termination",
             method = RequestMethod.DELETE,
             consumes = MediaType.APPLICATION_JSON_VALUE,

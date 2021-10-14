@@ -2,6 +2,7 @@ package com.bitozen.hms.pm.repository.termination;
 
 import com.bitozen.hms.projection.termination.ProlongedIllnessRegistryEntryProjection;
 import com.bitozen.hms.pm.common.ProlongedIllnessStatus;
+import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -23,10 +24,10 @@ public interface ProlongedIllnessRegistryRepository extends MongoRepository<Prol
     Optional<ProlongedIllnessRegistryEntryProjection> findOneByPiIDAndPiStatus(String piID, ProlongedIllnessStatus piStatus);
     
     @Query(value = "{$or: [{ 'piID' : {$regex: ?0,$options: 'i'}}," +
-            " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]}")
-    Page<ProlongedIllnessRegistryEntryProjection> findAllForWeb(String param, String piStatus, Pageable pageable);
+            " {'metadata.es.esID' : {$in : ?1}}]}")
+    Page<ProlongedIllnessRegistryEntryProjection> findAllForWeb(String param, List<String> esIDs, String piStatus, Pageable pageable);
 
     @Query(value = "{$or: [{ 'piID' : {$regex: ?0,$options: 'i'}}," +
-            " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]}", count=true)
-    long countAllForWeb(String param, String piStatus);
+            " {'metadata.es.esID' : {$in : ?1}}]}", count=true)
+    long countAllForWeb(String param, List<String> esIDs, String piStatus);
 }

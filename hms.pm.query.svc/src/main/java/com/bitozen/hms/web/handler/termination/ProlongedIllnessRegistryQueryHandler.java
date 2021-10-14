@@ -44,7 +44,8 @@ public class ProlongedIllnessRegistryQueryHandler {
     public List<ProlongedIllnessRegistryDTO> getAllProlongedIllnessRegistryForWeb(GetAllForWebQuery query){
         Pageable pageable = PageRequest.of(query.getRequest().getOffset(), query.getRequest().getLimit(), Sort.by("creational.createdDate").descending());
         String param = String.valueOf(query.getRequest().getParams().get("param"));
-        Page<ProlongedIllnessRegistryEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"), ProlongedIllnessStatus.ACTIVE.toString(), pageable);
+        List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
+        Page<ProlongedIllnessRegistryEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs, ProlongedIllnessStatus.ACTIVE.toString(), pageable);
         if(results.hasContent()){
             return assembler.toDTOs(results.getContent());
         }
@@ -54,7 +55,8 @@ public class ProlongedIllnessRegistryQueryHandler {
     @QueryHandler
     public Integer countProlongedIllnessRegistryForWeb(CountAllForWebQuery query) {
         String param = String.valueOf(query.getRequest().getParams().get("param"));
-        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"), ProlongedIllnessStatus.ACTIVE.toString())));
+        List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
+        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs, ProlongedIllnessStatus.ACTIVE.toString())));
         return count;
     }
 }
