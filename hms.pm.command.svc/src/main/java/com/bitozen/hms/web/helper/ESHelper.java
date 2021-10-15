@@ -2,6 +2,7 @@ package com.bitozen.hms.web.helper;
 
 import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.dto.share.ESOptimizeDTO;
+import com.bitozen.hms.common.dto.share.PositionOptimizeDTO;
 import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.pm.common.util.RequestUtil;
 import com.bitozen.hms.pm.common.util.RestClientUtil;
@@ -32,6 +33,9 @@ public class ESHelper {
     @Value("${hms.es.url.get.by.id}")
     private String HMS_ES_URL_GET_BY_ID;
 
+    @Value("${hms.es.get.by.ouid}")
+    private String HMS_ES_GET_BY_OU_ID;
+
     public ESOptimizeDTO findEsByID(String esID) {
         if (esID != null && !esID.equalsIgnoreCase("")) {
             ResponseEntity<GenericResponseDTO<ESOptimizeDTO>> data = restClientUtil.restServiceExchange(
@@ -43,6 +47,22 @@ public class ESHelper {
                     esID);
             if (data.getBody().getStatus().equals(ResponseStatus.S)) {
                 return objectMapper.convertValue(data.getBody().getData(), ESOptimizeDTO.class);
+            }
+        }
+        return null;
+    }
+
+    public PositionOptimizeDTO findESByOUID(String esID, String ouID) {
+        if (esID != null && !esID.equalsIgnoreCase("")) {
+            ResponseEntity<GenericResponseDTO<PositionOptimizeDTO>> data = restClientUtil.restServiceExchange(
+                    HMS_ES_URL,
+                    HMS_ES_GET_BY_OU_ID,
+                    HttpMethod.GET,
+                    requestUtil.getPreFormattedRequestWithToken(),
+                    GenericResponseDTO.class,
+                    esID, ouID);
+            if (data.getBody().getStatus().equals(ResponseStatus.S)) {
+                return objectMapper.convertValue(data.getBody().getData(), PositionOptimizeDTO.class);
             }
         }
         return null;
