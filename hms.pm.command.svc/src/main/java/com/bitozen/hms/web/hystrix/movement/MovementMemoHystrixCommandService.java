@@ -4,10 +4,9 @@ import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
-import com.bitozen.hms.pm.command.movement.MovementSKChangeCommand;
-import com.bitozen.hms.pm.command.movement.MovementSKCreateCommand;
-import com.bitozen.hms.pm.command.movement.MovementSKDeleteCommand;
-import com.bitozen.hms.pm.common.dto.command.movement.*;
+import com.bitozen.hms.pm.command.movement.*;
+import com.bitozen.hms.pm.common.dto.command.movement.MVMemoCreateCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.movement.MVMemoDeleteCommandDTO;
 import com.bitozen.hms.web.assembler.MovementAssembler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +29,7 @@ import java.util.Date;
 
 @Service
 @Slf4j
-public class MovementSKHystrixCommandService {
+public class MovementMemoHystrixCommandService {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -41,27 +40,27 @@ public class MovementSKHystrixCommandService {
     private final CommandGateway commandGateway;
 
     @Autowired
-    public MovementSKHystrixCommandService(CommandGateway commandGateway){
+    public MovementMemoHystrixCommandService(CommandGateway commandGateway){
         this.commandGateway = commandGateway;
     }
 
-    @HystrixCommand(fallbackMethod = "defaultPostMovementSKFallback")
+    @HystrixCommand(fallbackMethod = "defaultPostMovementMemoFallback")
     @Caching(
             evict = {
                     @CacheEvict(value = "findOneByMovementIDCache", allEntries = true),
                     @CacheEvict(value = "getAllMovementWebCache", allEntries = true)
             }
     )
-    public GenericResponseDTO<MVSKCreateCommandDTO> postMovementSK(MVSKCreateCommandDTO dto) {
-        GenericResponseDTO<MVSKCreateCommandDTO> response = new GenericResponseDTO().successResponse();
+    public GenericResponseDTO<MVMemoCreateCommandDTO> postMovementMemo(MVMemoCreateCommandDTO dto) {
+        GenericResponseDTO<MVMemoCreateCommandDTO> response = new GenericResponseDTO().successResponse();
         try {
-            MovementSKCreateCommand command = new MovementSKCreateCommand(
+            MovementMemoCreateCommand command = new MovementMemoCreateCommand(
                     dto.getMvID(),
-                    objectMapper.writeValueAsString(movAssembler.toSKDTOPostRequest(dto))
+                    objectMapper.writeValueAsString(movAssembler.toMemoDTOPostRequest(dto))
             );
-            commandGateway.send(command, new CommandCallback<MovementSKCreateCommand, Object>() {
+            commandGateway.send(command, new CommandCallback<MovementMemoCreateCommand, Object>() {
                 @Override
-                public void onResult(CommandMessage<? extends MovementSKCreateCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                public void onResult(CommandMessage<? extends MovementMemoCreateCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
                     if (commandResultMessage.isExceptional() == false) {
                         try {
                             log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
@@ -89,29 +88,29 @@ public class MovementSKHystrixCommandService {
         return response;
     }
 
-    private GenericResponseDTO<MVSKCreateCommandDTO> defaultPostMovementSKFallback(MVSKCreateCommandDTO dto, Throwable e) throws IOException {
-        return new GenericResponseDTO<MVSKCreateCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+    private GenericResponseDTO<MVMemoCreateCommandDTO> defaultPostMovementMemoFallback(MVMemoCreateCommandDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<MVMemoCreateCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
 
-    @HystrixCommand(fallbackMethod = "defaultPutMovementSKFallback")
+    @HystrixCommand(fallbackMethod = "defaultPutMovementMemoFallback")
     @Caching(
             evict = {
                     @CacheEvict(value = "findOneByMovementIDCache", allEntries = true),
                     @CacheEvict(value = "getAllMovementWebCache", allEntries = true)
             }
     )
-    public GenericResponseDTO<MVSKCreateCommandDTO> putMovementSK(MVSKCreateCommandDTO dto) {
-        GenericResponseDTO<MVSKCreateCommandDTO> response = new GenericResponseDTO().successResponse();
+    public GenericResponseDTO<MVMemoCreateCommandDTO> putMovementMemo(MVMemoCreateCommandDTO dto) {
+        GenericResponseDTO<MVMemoCreateCommandDTO> response = new GenericResponseDTO().successResponse();
         try {
-            MovementSKChangeCommand command = new MovementSKChangeCommand(
+            MovementMemoChangeCommand command = new MovementMemoChangeCommand(
                     dto.getMvID(),
-                    objectMapper.writeValueAsString(movAssembler.toSKDTOPostRequest(dto))
+                    objectMapper.writeValueAsString(movAssembler.toMemoDTOPostRequest(dto))
             );
-            commandGateway.send(command, new CommandCallback<MovementSKChangeCommand, Object>() {
+            commandGateway.send(command, new CommandCallback<MovementMemoChangeCommand, Object>() {
                 @Override
-                public void onResult(CommandMessage<? extends MovementSKChangeCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                public void onResult(CommandMessage<? extends MovementMemoChangeCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
                     if (commandResultMessage.isExceptional() == false) {
                         try {
                             log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
@@ -139,29 +138,29 @@ public class MovementSKHystrixCommandService {
         return response;
     }
 
-    private GenericResponseDTO<MVSKCreateCommandDTO> defaultPutMovementSKFallback(MVSKCreateCommandDTO dto, Throwable e) throws IOException {
-        return new GenericResponseDTO<MVSKCreateCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+    private GenericResponseDTO<MVMemoCreateCommandDTO> defaultPutMovementMemoFallback(MVMemoCreateCommandDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<MVMemoCreateCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
 
-    @HystrixCommand(fallbackMethod = "defaultDeleteMovementSKFallback")
+    @HystrixCommand(fallbackMethod = "defaultDeleteMovementMemoFallback")
     @Caching(
             evict = {
                     @CacheEvict(value = "findOneByMovementIDCache", allEntries = true),
                     @CacheEvict(value = "getAllMovementWebCache", allEntries = true)
             }
     )
-    public GenericResponseDTO<MVSKDeleteCommandDTO> deleteMovementSK(MVSKDeleteCommandDTO dto) {
-        GenericResponseDTO<MVSKDeleteCommandDTO> response = new GenericResponseDTO().successResponse();
+    public GenericResponseDTO<MVMemoDeleteCommandDTO> deleteMovementMemo(MVMemoDeleteCommandDTO dto) {
+        GenericResponseDTO<MVMemoDeleteCommandDTO> response = new GenericResponseDTO().successResponse();
         try {
-            MovementSKDeleteCommand command = new MovementSKDeleteCommand(
+            MovementMemoDeleteCommand command = new MovementMemoDeleteCommand(
                     dto.getMvID(),
-                    objectMapper.writeValueAsString(movAssembler.toSKDTODeleteRequest(dto))
+                    objectMapper.writeValueAsString(movAssembler.toMemoDTODeleteRequest(dto))
             );
-            commandGateway.send(command, new CommandCallback<MovementSKDeleteCommand, Object>() {
+            commandGateway.send(command, new CommandCallback<MovementMemoDeleteCommand, Object>() {
                 @Override
-                public void onResult(CommandMessage<? extends MovementSKDeleteCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                public void onResult(CommandMessage<? extends MovementMemoDeleteCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
                     if (commandResultMessage.isExceptional() == false) {
                         try {
                             log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
@@ -189,8 +188,8 @@ public class MovementSKHystrixCommandService {
         return response;
     }
 
-    private GenericResponseDTO<MVSKDeleteCommandDTO> defaultDeleteMovementSKFallback(MVSKDeleteCommandDTO dto, Throwable e) throws IOException {
-        return new GenericResponseDTO<MVSKDeleteCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+    private GenericResponseDTO<MVMemoDeleteCommandDTO> defaultDeleteMovementMemoFallback(MVMemoDeleteCommandDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<MVMemoDeleteCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
