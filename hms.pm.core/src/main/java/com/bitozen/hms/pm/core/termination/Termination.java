@@ -39,9 +39,10 @@ public class Termination {
     private String tmnReason;
     private TerminationState tmnState;
     private TerminationStatus tmnStatus;
-    private String tmnPension;
     private String metadata;
     private String token;
+    private String bagPensionSpec;
+    private String bagProlongedIllnessSpec;
     
     private String createdBy;
     private Date createdDate;
@@ -77,9 +78,10 @@ public class Termination {
                 command.getTmnReason(),
                 command.getTmnState(),
                 command.getTmnStatus(),
-                command.getTmnPension(),
                 command.getMetadata(),
                 command.getToken(),
+                command.getBagPensionSpec(),
+                command.getBagProlongedIllnessSpec(),
                 command.getCreatedBy(),
                 command.getCreatedDate(),
                 command.getRecordID()
@@ -110,9 +112,10 @@ public class Termination {
                 command.getTmnReason(),
                 command.getTmnState(),
                 command.getTmnStatus(),
-                command.getTmnPension(),
                 command.getMetadata(),
                 command.getToken(),
+                command.getBagPensionSpec(),
+                command.getBagProlongedIllnessSpec(),
                 command.getUpdatedBy(),
                 command.getUpdatedDate()
         ));
@@ -150,9 +153,10 @@ public class Termination {
         this.tmnReason = event.getTmnReason();
         this.tmnState = event.getTmnState();
         this.tmnStatus = event.getTmnStatus();
-        this.tmnPension = event.getTmnPension();
         this.metadata = event.getMetadata();
         this.token = event.getToken();
+        this.bagPensionSpec = event.getBagPensionSpec();
+        this.bagProlongedIllnessSpec = event.getBagProlongedIllnessSpec();
         this.createdBy = event.getCreatedBy();
         this.createdDate = event.getCreatedDate();
         this.recordID = event.getRecordID();
@@ -181,9 +185,10 @@ public class Termination {
         this.tmnReason = event.getTmnReason();
         this.tmnState = event.getTmnState();
         this.tmnStatus = event.getTmnStatus();
-        this.tmnPension = event.getTmnPension();
         this.metadata = event.getMetadata();
         this.token = event.getToken();
+        this.bagPensionSpec = event.getBagPensionSpec();
+        this.bagProlongedIllnessSpec = event.getBagProlongedIllnessSpec();
         this.updatedBy = event.getUpdatedBy();
         this.updatedDate = event.getUpdatedDate();
     

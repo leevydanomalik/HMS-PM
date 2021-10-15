@@ -33,14 +33,15 @@ public class TerminationDTOAssembler {
                 domain.getTmnReason(),
                 domain.getTmnState(),
                 domain.getTmnStatus(),
-                domain.getTmnPension(),
                 domain.getMetadata(),
                 domain.getToken(),
                 domain.getCreational().getCreatedBy(),
                 domain.getCreational().getCreatedDate(),
                 domain.getCreational().getModifiedBy(),
                 domain.getCreational().getModifiedDate(),
-                domain.getRecordID()
+                domain.getRecordID(),
+                domain.getBagPensionSpec(),
+                domain.getBagProlongedIllnessSpec()
         );
 
     }

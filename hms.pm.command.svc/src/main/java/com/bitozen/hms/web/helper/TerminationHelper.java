@@ -1,6 +1,8 @@
 package com.bitozen.hms.web.helper;
 
+import com.bitozen.hms.pm.common.dto.command.termination.BAGProlongedIllnessCreateDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationDocumentCreateDTO;
+import com.bitozen.hms.pm.common.dto.query.termination.BAGProlongedIllnessDTO;
 import com.bitozen.hms.pm.common.dto.query.termination.TerminationDocumentDTO;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +13,20 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class TerminationHelper {
-    
+
     @Autowired
     private BizparHelper bizHelper;
-    
-    public TerminationDocumentDTO convertDocument(TerminationDocumentCreateDTO dto){
+
+    public TerminationDocumentDTO convertDocument(TerminationDocumentCreateDTO dto) {
         TerminationDocumentDTO data = new TerminationDocumentDTO();
         data.setDocID(dto.getDocID());
         data.setDocName(dto.getDocName());
         data.setDocType(bizHelper.convertBizpar(dto.getDocType()));
         data.setDocURL(dto.getDocURL());
         return data;
-    
+
     }
-    
+
     public List<TerminationDocumentDTO> toDocumentDTOs(List<TerminationDocumentCreateDTO> domains) {
         List<TerminationDocumentDTO> datas = new ArrayList<>();
         if (domains != null) {
@@ -41,5 +43,12 @@ public class TerminationHelper {
 
         return datas;
     }
-    
+
+    public BAGProlongedIllnessDTO toBagProlongedIllness(BAGProlongedIllnessCreateDTO dto) {
+        BAGProlongedIllnessDTO data = new BAGProlongedIllnessDTO();
+        data.setPlDuration(bizHelper.convertBizpar(dto.getPlDuration()));
+        return data;
+
+    }
+
 }

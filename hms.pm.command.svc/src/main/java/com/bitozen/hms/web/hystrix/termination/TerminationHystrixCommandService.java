@@ -92,9 +92,10 @@ public class TerminationHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getTmnReason())),
                     dto.getTmnState(),
                     dto.getTmnStatus(),
-                    objectMapper.writeValueAsString(dto.getTmnPension()),
                     objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
+                    objectMapper.writeValueAsString(dto.getBagPensionSpec()),
+                    objectMapper.writeValueAsString(terminationHelper.toBagProlongedIllness(dto.getBagProlongedIllnessSpec())),
                     dto.getCreatedBy(),
                     dto.getCreatedDate(),
                     dto.getRecordID()
@@ -168,9 +169,10 @@ public class TerminationHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getTmnReason())),
                     dto.getTmnState(),
                     dto.getTmnStatus(),
-                    objectMapper.writeValueAsString(dto.getTmnPension()),
                     objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
+                    objectMapper.writeValueAsString(dto.getBagPensionSpec()),
+                    objectMapper.writeValueAsString(terminationHelper.toBagProlongedIllness(dto.getBagProlongedIllnessSpec())),
                     dto.getUpdatedBy(),
                     dto.getUpdatedDate()
             );

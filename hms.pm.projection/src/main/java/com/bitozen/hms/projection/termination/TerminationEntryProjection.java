@@ -8,12 +8,13 @@ import com.bitozen.hms.common.dto.share.EmployeeOptimizeDTO;
 import com.bitozen.hms.pm.common.TerminationState;
 import com.bitozen.hms.pm.common.TerminationStatus;
 import com.bitozen.hms.pm.common.dto.query.termination.BAGPensionDTO;
+import com.bitozen.hms.pm.common.dto.query.termination.BAGProlongedIllnessDTO;
+import com.bitozen.hms.pm.common.dto.query.termination.BAGTMNSpec;
 import com.bitozen.hms.pm.common.dto.query.termination.TerminationDocumentDTO;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -22,11 +23,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Document(value = "trx_termination")
-@AllArgsConstructor
 @NoArgsConstructor
 @Data
 @ToString
-public class TerminationEntryProjection {
+public class TerminationEntryProjection extends BAGTMNSpec {
     
     @Id
     private Long id;
@@ -53,12 +53,44 @@ public class TerminationEntryProjection {
     private BizparOptimizeDTO tmnReason;
     private TerminationState tmnState;
     private TerminationStatus tmnStatus;
-    private BAGPensionDTO tmnPension;
     private MetadataDTO metadata;
     private GenericAccessTokenDTO token;
     
     private CreationalSpecificationDTO creational;
     private String recordID;
+    
+    
+
+    public TerminationEntryProjection(Long id, String tmnID, String tmnNotes, String bpjsHTDocNumber, String bpjsPensionDocNumber, List<String> docCopies, Boolean isCancelFinalApprove, Boolean isExecuted, Boolean isFinalApprove, String memoDocNumber, EmployeeOptimizeDTO employee, EmployeeOptimizeDTO requestor, String skDocNumber, String skdtDocNumber, List<TerminationDocumentDTO> tmnDocs, Date tmnEffectiveDate, Date tmnReqDate, Date tmnPphEndDate, BizparOptimizeDTO tmnReason, TerminationState tmnState, TerminationStatus tmnStatus, MetadataDTO metadata, GenericAccessTokenDTO token, CreationalSpecificationDTO creational, String recordID, BAGPensionDTO bagPensionSpec, BAGProlongedIllnessDTO bagProlongedIllnessSpec) {
+        super(bagPensionSpec, bagProlongedIllnessSpec);
+        this.id = id;
+        this.tmnID = tmnID;
+        this.tmnNotes = tmnNotes;
+        this.bpjsHTDocNumber = bpjsHTDocNumber;
+        this.bpjsPensionDocNumber = bpjsPensionDocNumber;
+        this.docCopies = docCopies;
+        this.isCancelFinalApprove = isCancelFinalApprove;
+        this.isExecuted = isExecuted;
+        this.isFinalApprove = isFinalApprove;
+        this.memoDocNumber = memoDocNumber;
+        this.employee = employee;
+        this.requestor = requestor;
+        this.skDocNumber = skDocNumber;
+        this.skdtDocNumber = skdtDocNumber;
+        this.tmnDocs = tmnDocs;
+        this.tmnEffectiveDate = tmnEffectiveDate;
+        this.tmnReqDate = tmnReqDate;
+        this.tmnPphEndDate = tmnPphEndDate;
+        this.tmnReason = tmnReason;
+        this.tmnState = tmnState;
+        this.tmnStatus = tmnStatus;
+        this.metadata = metadata;
+        this.token = token;
+        this.creational = creational;
+        this.recordID = recordID;
+    }
+    
+    
     
     
     
