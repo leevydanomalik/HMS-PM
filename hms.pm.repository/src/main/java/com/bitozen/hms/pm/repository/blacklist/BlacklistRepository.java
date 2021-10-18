@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,12 +21,14 @@ public interface BlacklistRepository extends MongoRepository<BlacklistEntryProje
     Optional<BlacklistEntryProjection> findOneByBlacklistIDAndBlacklistStatusNot(String blacklistID, BlacklistStatus blacklistStatus);
 
     @Query(value = "{$and: [{$or: [{ 'blacklistID' : {$regex: ?0,$options: 'i'}}," +
-            " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]}," +
-            "{'blacklistStatus' : {$ne:?1}}]}")
-    Page<BlacklistEntryProjection> findAllForWeb(String param, String blacklistStatus, Pageable pageable);
+            "{'blacklistSPKNumber' : {$regex: ?0,$options: 'i'}}]}," +
+            "{'metadata.es.esID' : {$in : ?1}}," +
+            "{'blacklistStatus' : {$ne:?2}}]}")
+    Page<BlacklistEntryProjection> findAllForWeb(String param, List<String> esIDs, String blacklistStatus, Pageable pageable);
 
     @Query(value = "{$and: [{$or: [{ 'blacklistID' : {$regex: ?0,$options: 'i'}}," +
-            " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]}," +
-            "{'blacklistStatus' : {$ne:?1}}]}")
-    long countAllForWeb(String param, String blacklistStatus);
+            "{'blacklistSPKNumber' : {$regex: ?0,$options: 'i'}}]}," +
+            "{'metadata.es.esID' : {$in : ?1}}," +
+            "{'blacklistStatus' : {$ne:?2}}]}", count=true)
+    long countAllForWeb(String param, List<String> esIDs, String blacklistStatus);
 }

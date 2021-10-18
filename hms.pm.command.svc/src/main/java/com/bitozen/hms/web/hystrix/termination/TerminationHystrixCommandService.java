@@ -7,9 +7,11 @@ import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.command.termination.TerminationChangeCommand;
 import com.bitozen.hms.pm.command.termination.TerminationCreateCommand;
 import com.bitozen.hms.pm.command.termination.TerminationDeleteCommand;
+import com.bitozen.hms.pm.command.termination.TerminationStateAndStatusChangeCommand;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationDeleteCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.termination.TerminationStateAndStatusChangeCommandDTO;
 import com.bitozen.hms.web.helper.AssemblerHelper;
 import com.bitozen.hms.web.helper.BizparHelper;
 import com.bitozen.hms.web.helper.EmployeeHelper;
@@ -20,7 +22,11 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 import com.netflix.hystrix.exception.HystrixTimeoutException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandCallback;
 import org.axonframework.commandhandling.CommandMessage;
@@ -31,6 +37,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
 
 
 
@@ -208,6 +215,75 @@ public class TerminationHystrixCommandService {
 
     private GenericResponseDTO<TerminationChangeCommandDTO> defaultPutTerminationFallback(TerminationChangeCommandDTO dto, Throwable e) throws IOException {
         return new GenericResponseDTO<TerminationChangeCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
+    
+    @HystrixCommand(fallbackMethod = "defaultPutTerminationStateAndStatusFallback")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findOneByTerminationIDCache", allEntries = true),
+                    @CacheEvict(value = "getAllTerminationWebCache", allEntries = true),
+                    @CacheEvict(value = "generateTerminationDocumentByteCache", allEntries = true)
+            }
+    )
+    public GenericResponseDTO<TerminationStateAndStatusChangeCommandDTO> changeTerminationStateAndStatus(TerminationStateAndStatusChangeCommandDTO dto) {
+        GenericResponseDTO<TerminationStateAndStatusChangeCommandDTO> response = new GenericResponseDTO().successResponse();
+        try {
+            TerminationStateAndStatusChangeCommand command = new TerminationStateAndStatusChangeCommand(
+                    dto.getTmnID().toUpperCase(),
+                    dto.getTmnState(),
+                    dto.getTmnStatus(),
+                    dto.getUpdatedBy() == null ? "SYSTEM" : dto.getUpdatedBy(),
+                    dto.getUpdatedDate() == null ? new Date() : dto.getUpdatedDate());
+
+            commandGateway.send(command, new CommandCallback<TerminationStateAndStatusChangeCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends TerminationStateAndStatusChangeCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    if (commandResultMessage.isExceptional() == false) {
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                    ProjectType.CQRS, "Termination", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                    new GenericResponseDTO().successResponse().getMessage())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    } else {
+                        response.setStatus(ResponseStatus.F);
+                        response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                        response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
+                                    ProjectType.CQRS, "Termination", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    }
+                }
+            });
+            return response;
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            try {
+                log.info(objectMapper.writeValueAsString(
+                        LogOpsUtil.getErrorResponse(ProjectType.CQRS, "Termination", new Date(), "Command", String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getStackTrace())));
+            } catch (JsonProcessingException ex) {
+                log.info(ex.getMessage());
+            }
+
+            if (e instanceof TransactionSystemException) {
+                if (((TransactionSystemException) e).getRootCause() instanceof ConstraintViolationException) {
+                    Set<ConstraintViolation<?>> data = ((ConstraintViolationException) ((TransactionSystemException) e).getRootCause()).getConstraintViolations();
+                    String msg = new ArrayList<>(data).get(0).getMessage();
+                    return new GenericResponseDTO().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), msg);
+                }
+            }
+            return new GenericResponseDTO().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getLocalizedMessage());
+        }
+    }
+    
+    private GenericResponseDTO<TerminationStateAndStatusChangeCommandDTO> defaultPutTerminationStateAndStatusFallback(TerminationStateAndStatusChangeCommandDTO dTO, Throwable e) throws IOException {
+        return new GenericResponseDTO<TerminationStateAndStatusChangeCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }

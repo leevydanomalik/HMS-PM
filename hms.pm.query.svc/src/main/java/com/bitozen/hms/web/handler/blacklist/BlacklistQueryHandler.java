@@ -42,7 +42,8 @@ public class BlacklistQueryHandler {
     public List<BlacklistDTO> getAllBlacklistForWeb(GetAllForWebQuery query){
         Pageable pageable = PageRequest.of(query.getRequest().getOffset(), query.getRequest().getLimit(), Sort.by("creational.createdDate").descending());
         String param = String.valueOf(query.getRequest().getParams().get("param"));
-        Page<BlacklistEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"), BlacklistStatus.INACTIVE.toString(), pageable);
+        List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
+        Page<BlacklistEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs, BlacklistStatus.INACTIVE.toString(), pageable);
         if(results.hasContent()){
             return assembler.toDTOs(results.getContent());
         }
@@ -52,7 +53,8 @@ public class BlacklistQueryHandler {
     @QueryHandler
     public Integer countBlacklistForWeb(CountAllForWebQuery query) {
         String param = String.valueOf(query.getRequest().getParams().get("param"));
-        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"), BlacklistStatus.INACTIVE.toString())));
+        List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
+        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs, BlacklistStatus.INACTIVE.toString())));
         return count;
     }
 }
