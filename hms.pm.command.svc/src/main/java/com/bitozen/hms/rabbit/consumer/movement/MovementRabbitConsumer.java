@@ -11,7 +11,6 @@ import com.bitozen.hms.projection.movement.MovementEntryProjection;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.Base64;
-import com.jlefebure.spring.boot.minio.MinioException;
 import com.jlefebure.spring.boot.minio.MinioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -62,9 +61,8 @@ public class MovementRabbitConsumer {
             String docID = parts[1];
 
             Path path = Paths.get("MOVEMENT_DOC_" + mvID + "_" + docID + "_" + dataParam.getOriginalFileName());
-            Map<String, String> header = new HashMap<>();
-            header.put("Movement", dataParam.getId());
-            Optional<MovementEntryProjection> movement = repository.findOneByMvIDAndMvStatusNot(dataParam.getId(), MVStatus.INACTIVE);
+            
+            Optional<MovementEntryProjection> movement = repository.findOneByMvIDAndMvStatusNot(mvID, MVStatus.INACTIVE);
 
             List<DocumentDTO> details = movement.get().getMvDocs()  == null ? new ArrayList<>() : movement.get().getMvDocs();
 
@@ -77,13 +75,14 @@ public class MovementRabbitConsumer {
             movement.get().setMvDocs(details);
             movement.get().getCreational().setModifiedBy(dataParam.getUpdatedBy());
             movement.get().getCreational().setModifiedDate(new Date());
-
+            Map<String, String> header = new HashMap<>();
+            header.put("Movement", dataParam.getId());
             minioService.upload(path, dataDocument, dataParam.getContentType(), header);
             repository.save(movement.get());
             log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
                     ProjectType.CQRS, "Movement Upload Document", new Date(), "UPLOAD", new GenericResponseDTO().successResponse().getCode(),
                     new GenericResponseDTO().successResponse().getMessage())));
-        } catch (JsonProcessingException | MinioException ex) {
+        } catch (Exception ex) {
             try {
                 log.info(objectMapper.writeValueAsString(
                         LogOpsUtil.getErrorResponse(ProjectType.CQRS, "Movement Upload Document", new Date(), "UPLOAD", String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), ex.getStackTrace())));

@@ -62,18 +62,24 @@ public class MovementMinioService {
      * @param updatedDate
      * @return
      */
-    public GenericResponseDTO<String> convertAndSendToRabbit(MultipartFile upload, String mvID, String updatedBy, String updatedDate) {
+    public GenericResponseDTO<String> convertAndSendToRabbit(MultipartFile upload, String templateID) {
         GenericResponseDTO<String> response = new GenericResponseDTO().successResponse();
         try {
             byte[] fileContent = ByteStreams.toByteArray(upload.getInputStream());
             String encodedString = Base64.encodeBase64String(fileContent);
 
-            producer.movementDocumentUploadProducer(new RabbitFileDTO(upload.getOriginalFilename(), upload.getContentType(), encodedString, mvID, updatedBy, new SimpleDateFormat("dd-MM-yyyy").parse(updatedDate), null));
+            RabbitFileDTO dto = new RabbitFileDTO();
+            dto.setOriginalFileName(upload.getOriginalFilename());
+            dto.setContentType(upload.getContentType());
+            dto.setImageFile(encodedString);
+            dto.setId(templateID);
+            
+            producer.movementDocumentUploadProducer(dto) ;
 
             log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
                     ProjectType.CQRS, "Movement Upload Document", new Date(), "UPLOAD", new GenericResponseDTO().successResponse().getCode(),
                     new GenericResponseDTO().successResponse().getMessage())));
-            response.setData(mvID);
+            response.setData(templateID);
             return response;
         } catch (Exception ex) {
             try {
@@ -124,7 +130,7 @@ public class MovementMinioService {
                     ProjectType.CQRS, "Movement Get Document", new Date(), "GET DOCUMENT", new GenericResponseDTO().successResponse().getCode(),
                     new GenericResponseDTO().successResponse().getMessage())));
             return new GenericResponseDTO().successResponse(document);
-        } catch (IOException | MinioException e) {
+        } catch (Exception e) {
             log.info(e.getMessage());
             try {
                 log.info(objectMapper.writeValueAsString(

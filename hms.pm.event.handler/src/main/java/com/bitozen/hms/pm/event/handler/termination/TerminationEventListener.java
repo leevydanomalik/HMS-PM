@@ -12,6 +12,7 @@ import com.bitozen.hms.pm.common.dto.query.termination.TerminationDocumentDTO;
 import com.bitozen.hms.pm.event.termination.TerminationChangeEvent;
 import com.bitozen.hms.pm.event.termination.TerminationCreateEvent;
 import com.bitozen.hms.pm.event.termination.TerminationDeleteEvent;
+import com.bitozen.hms.pm.event.termination.TerminationStateAndStatusChangeEvent;
 import com.bitozen.hms.pm.repository.termination.TerminationRepository;
 import com.bitozen.hms.projection.termination.TerminationEntryProjection;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -113,4 +114,18 @@ public class TerminationEventListener {
         repository.save(data.get());
     }
     
+    @SneakyThrows
+    @EventHandler
+    public void on(TerminationStateAndStatusChangeEvent event) {
+        try {
+            Optional<TerminationEntryProjection> data = repository.findOneByTmnIDAndTmnStatusNot(event.getTmnID(), TerminationStatus.INACTIVE);
+            data.get().setTmnState(event.getTmnState());
+            data.get().setTmnStatus(event.getTmnStatus());
+            data.get().getCreational().setModifiedBy(event.getUpdatedBy());
+            data.get().getCreational().setModifiedDate(event.getUpdatedDate());
+            repository.save(data.get());
+        } catch (Exception e) {
+            log.info(e.getMessage());    
+        }
+    }
 }

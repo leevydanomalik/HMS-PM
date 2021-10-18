@@ -3,11 +3,13 @@ package com.bitozen.hms.pm.core.termination;
 import com.bitozen.hms.pm.command.termination.TerminationChangeCommand;
 import com.bitozen.hms.pm.command.termination.TerminationCreateCommand;
 import com.bitozen.hms.pm.command.termination.TerminationDeleteCommand;
+import com.bitozen.hms.pm.command.termination.TerminationStateAndStatusChangeCommand;
 import com.bitozen.hms.pm.common.TerminationState;
 import com.bitozen.hms.pm.common.TerminationStatus;
 import com.bitozen.hms.pm.event.termination.TerminationChangeEvent;
 import com.bitozen.hms.pm.event.termination.TerminationCreateEvent;
 import com.bitozen.hms.pm.event.termination.TerminationDeleteEvent;
+import com.bitozen.hms.pm.event.termination.TerminationStateAndStatusChangeEvent;
 import java.util.Date;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -131,6 +133,16 @@ public class Termination {
 
     }
     
+    @CommandHandler
+    public void handle(TerminationStateAndStatusChangeCommand command) {
+        AggregateLifecycle.apply(new TerminationStateAndStatusChangeEvent(
+                command.getUpdatedBy(),
+                command.getUpdatedDate(),
+                command.getTmnID(),
+                command.getTmnState(),
+                command.getTmnStatus()));
+    }
+    
     @EventSourcingHandler
     public void on(TerminationCreateEvent event){
         this.tmnID = event.getTmnID();
@@ -201,7 +213,13 @@ public class Termination {
     
     }
     
-    
-    
+    @EventSourcingHandler
+    public void on(TerminationStateAndStatusChangeEvent event) {
+        this.tmnID = event.getTmnID();
+        this.tmnState = event.getTmnState();
+        this.tmnStatus = event.getTmnStatus();
+        this.updatedBy = event.getUpdatedBy();
+        this.updatedDate = event.getUpdatedDate();
+    }
     
 }
