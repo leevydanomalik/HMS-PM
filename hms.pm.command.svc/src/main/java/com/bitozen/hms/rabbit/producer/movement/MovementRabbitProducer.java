@@ -14,4 +14,12 @@ public class MovementRabbitProducer {
     public void movementDocumentUploadProducer(RabbitFileDTO dto) {
         rabbitTemplate.convertAndSend("x-hms-pm", "movement-upload-image", dto);
     }
+
+    public void movementSKDocumentUploadProducer(RabbitFileDTO dto) {
+        rabbitTemplate.convertAndSend("x-hms-pm", "movement-sk-upload-image", dto);
+    }
+
+    public void movementMemoDocumentUploadProducer(RabbitFileDTO dto) {
+        rabbitTemplate.convertAndSend("x-hms-pm", "movement-memo-upload-image", dto);
+    }
 }
