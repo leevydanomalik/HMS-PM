@@ -1,8 +1,11 @@
 package com.bitozen.hms.pm.event.handler.movement;
 
+import com.bitozen.hms.pm.common.MVMemoStatus;
 import com.bitozen.hms.pm.common.MVSKStatus;
 import com.bitozen.hms.pm.common.MVStatus;
-import com.bitozen.hms.pm.common.dto.query.movement.*;
+import com.bitozen.hms.pm.common.dto.query.movement.MVEmployeeDTO;
+import com.bitozen.hms.pm.common.dto.query.movement.MVMemoDTO;
+import com.bitozen.hms.pm.common.dto.query.movement.MVSKDTO;
 import com.bitozen.hms.pm.event.movement.*;
 import com.bitozen.hms.pm.repository.movement.MovementRepository;
 import com.bitozen.hms.projection.movement.MovementEntryProjection;
@@ -18,7 +21,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class MovementSKEventListener {
+public class MovementMemoEventListener {
 
     @Autowired
     private ObjectMapper mapper;
@@ -28,7 +31,7 @@ public class MovementSKEventListener {
 
     @SneakyThrows
     @EventHandler
-    public void on(MovementSKCreateEvent event) {
+    public void on(MovementMemoCreateEvent event) {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
         MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
         if(data.isPresent()) {
@@ -36,7 +39,7 @@ public class MovementSKEventListener {
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
                 if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
-                    detail.getSks().addAll(employee.getSks());
+                    detail.getMemos().addAll(employee.getMemos());
                 }
             });
             movement.setEmployees(employees);
@@ -46,32 +49,30 @@ public class MovementSKEventListener {
 
     @SneakyThrows
     @EventHandler
-    public void on(MovementSKChangeEvent event) {
+    public void on(MovementMemoChangeEvent event) {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
         MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
-        MVSKDTO skdata = employee.getSks().get(0);
+        MVMemoDTO memoData = employee.getMemos().get(0);
         if(data.isPresent()) {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
                 if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
-                    List<MVSKDTO> sks = detail.getSks();
-                    sks.stream().forEach(sk -> {
-                        if(sk.getSkID().equalsIgnoreCase(skdata.getSkID())) {
-                            sk.setSkRefID(skdata.getSkRefID());
-                            sk.setSkDocNumber(skdata.getSkDocNumber());
-                            sk.setSkStatus(skdata.getSkStatus());
-                            sk.setSkState(skdata.getSkState());
-                            sk.setSkType(skdata.getSkType());
-                            sk.setRequestor(skdata.getRequestor());
-                            sk.setIsRevoke(skdata.getIsRevoke());
-                            sk.setIsFinalApprove(skdata.getIsFinalApprove());
-                            sk.setSkCopies(skdata.getSkCopies());
-                            sk.setSkConsiderDesc(skdata.getSkConsiderDesc());
-                            sk.setRequestDate(skdata.getRequestDate());
+                    List<MVMemoDTO> memos = detail.getMemos();
+                    memos.stream().forEach(memo -> {
+                        if(memo.getMemoID().equalsIgnoreCase(memoData.getMemoID())) {
+                            memo.setMemoRefID(memoData.getMemoRefID());
+                            memo.setMemoDocNumber(memoData.getMemoDocNumber());
+                            memo.setIsRevoke(memoData.getIsRevoke());
+                            memo.setIsFinalApprove(memoData.getIsFinalApprove());
+                            memo.setMemoStatus(memoData.getMemoStatus());
+                            memo.setMemoState(memoData.getMemoState());
+                            memo.setMemoType(memoData.getMemoType());
+                            memo.setRequestor(memoData.getRequestor());
+                            memo.setRequestDate(memoData.getRequestDate());
                         }
                     });
-                    detail.setSks(sks);
+                    detail.setMemos(memos);
                 }
             });
             movement.setEmployees(employees);
@@ -81,22 +82,22 @@ public class MovementSKEventListener {
 
     @SneakyThrows
     @EventHandler
-    public void on(MovementSKDeleteEvent event) {
+    public void on(MovementMemoDeleteEvent event) {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
         MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
-        MVSKDTO skdata = employee.getSks().get(0);
+        MVMemoDTO memoData = employee.getMemos().get(0);
         if(data.isPresent()) {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
                 if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
-                    List<MVSKDTO> sks = detail.getSks();
-                    sks.stream().forEach(sk -> {
-                        if(sk.getSkID().equalsIgnoreCase(skdata.getSkID())) {
-                            sk.setSkStatus(MVSKStatus.INACTIVE);
+                    List<MVMemoDTO> memos = detail.getMemos();
+                    memos.stream().forEach(memo -> {
+                        if(memo.getMemoID().equalsIgnoreCase(memoData.getMemoID())) {
+                            memo.setMemoStatus(MVMemoStatus.INACTIVE);
                         }
                     });
-                    detail.setSks(sks);
+                    detail.setMemos(memos);
                 }
             });
             movement.setEmployees(employees);

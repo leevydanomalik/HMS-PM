@@ -120,7 +120,7 @@ public class Movement {
 
     @CommandHandler
     public void handle(MovementSKCreateCommand command) {
-        AggregateLifecycle.apply(new MovementSKChangeEvent(
+        AggregateLifecycle.apply(new MovementSKCreateEvent(
                 command.getMvID(),
                 command.getEmployees()
         ));
@@ -137,6 +137,30 @@ public class Movement {
     @CommandHandler
     public void handle(MovementSKDeleteCommand command) {
         AggregateLifecycle.apply(new MovementSKDeleteEvent(
+                command.getMvID(),
+                command.getEmployees()
+        ));
+    }
+
+    @CommandHandler
+    public void handle(MovementMemoCreateCommand command) {
+        AggregateLifecycle.apply(new MovementMemoCreateEvent(
+                command.getMvID(),
+                command.getEmployees()
+        ));
+    }
+
+    @CommandHandler
+    public void handle(MovementMemoChangeCommand command) {
+        AggregateLifecycle.apply(new MovementMemoChangeEvent(
+                command.getMvID(),
+                command.getEmployees()
+        ));
+    }
+
+    @CommandHandler
+    public void handle(MovementMemoDeleteCommand command) {
+        AggregateLifecycle.apply(new MovementMemoDeleteEvent(
                 command.getMvID(),
                 command.getEmployees()
         ));
@@ -219,6 +243,24 @@ public class Movement {
 
     @EventSourcingHandler
     public void on(MovementSKDeleteEvent event) {
+        this.mvID = event.getMvID();
+        this.employees = event.getEmployees();
+    }
+
+    @EventSourcingHandler
+    public void on(MovementMemoCreateEvent event) {
+        this.mvID = event.getMvID();
+        this.employees = event.getEmployees();
+    }
+
+    @EventSourcingHandler
+    public void on(MovementMemoChangeEvent event) {
+        this.mvID = event.getMvID();
+        this.employees = event.getEmployees();
+    }
+
+    @EventSourcingHandler
+    public void on(MovementMemoDeleteEvent event) {
         this.mvID = event.getMvID();
         this.employees = event.getEmployees();
     }

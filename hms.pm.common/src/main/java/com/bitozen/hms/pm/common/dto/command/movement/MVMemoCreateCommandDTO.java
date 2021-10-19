@@ -1,7 +1,7 @@
 package com.bitozen.hms.pm.common.dto.command.movement;
 
-import com.bitozen.hms.pm.common.MVSKState;
-import com.bitozen.hms.pm.common.MVSKStatus;
+import com.bitozen.hms.pm.common.MVMemoState;
+import com.bitozen.hms.pm.common.MVMemoStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -12,48 +12,43 @@ import lombok.ToString;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MVSKCreateCommandDTO implements Serializable {
+public class MVMemoCreateCommandDTO implements Serializable {
 
     private String mvID;
     private String mvDetailID;
 
-    private String skID;
-    private String skRefID;
-    private String skDocNumber;
-    private MVSKStatus skStatus;
-    private MVSKState skState;
-    private String skType;
-    private String requestor;
+    private String memoID;
+    private String memoRefID;
+    private String memoDocNumber;
     private Boolean isRevoke;
     private Boolean isFinalApprove;
-    private List<String> skCopies;
-    private List<String> skConsiderDesc;
+    private MVMemoStatus memoStatus;
+    private MVMemoState memoState;
+    private String memoType;
+    private String requestor;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date requestDate;
 
     @JsonIgnore
-    public MVSKCreateCommandDTO getInstance() {
-        return new MVSKCreateCommandDTO(
+    public MVMemoCreateCommandDTO getInstance() {
+        return new MVMemoCreateCommandDTO(
                 UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
                 UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
                 UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
                 UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
                 UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                MVSKStatus.INITIATE,
-                MVSKState.INITIATE,
+                Boolean.TRUE,
+                Boolean.TRUE,
+                MVMemoStatus.INITIATE,
+                MVMemoState.INITIATE,
                 "KEY001",
                 "EMPNEW666",
-                Boolean.TRUE,
-                Boolean.TRUE,
-                new ArrayList<>(),
-                new ArrayList<>(),
                 new Date()
         );
     }

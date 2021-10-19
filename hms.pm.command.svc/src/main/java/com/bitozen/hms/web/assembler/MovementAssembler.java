@@ -244,4 +244,42 @@ public class MovementAssembler {
                 ))));
         return empDTO;
     }
+
+    public MVEmployeeDTO toMemoDTOPostRequest(MVMemoCreateCommandDTO dto) {
+        MVEmployeeDTO empDTO = new MVEmployeeDTO();
+        empDTO.setMvDetailID(dto.getMvDetailID());
+        empDTO.setMemos(new ArrayList<>(Arrays.asList(
+                new MVMemoDTO(
+                        dto.getMemoID(),
+                        dto.getMemoRefID(),
+                        dto.getMemoDocNumber(),
+                        dto.getIsRevoke(),
+                        dto.getIsFinalApprove(),
+                        dto.getMemoStatus(),
+                        dto.getMemoState(),
+                        bizHelper.convertBizpar(dto.getMemoType()),
+                        empHelper.findEmployeeOptimizeByKey(dto.getRequestor()),
+                        dto.getRequestDate()
+                ))));
+        return empDTO;
+    }
+
+    public MVEmployeeDTO toMemoDTODeleteRequest(MVMemoDeleteCommandDTO dto) {
+        MVEmployeeDTO empDTO = new MVEmployeeDTO();
+        empDTO.setMvDetailID(dto.getMvDetailID());
+        empDTO.setMemos(new ArrayList<>(Arrays.asList(
+                new MVMemoDTO(
+                        dto.getMemoID(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        dto.getRequestDate()
+                ))));
+        return empDTO;
+    }
 }
