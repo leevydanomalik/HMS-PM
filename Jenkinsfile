@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage ('Clone') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: 'main']], extensions: [[$class: 'WipeWorkspace']], userRemoteConfigs: [[credentialsId: 'bff11b86-4d33-4fb2-b02c-38e042b1b0b7', refspec: '+refs/tags/*:refs/remotes/origin/tag/*', url: 'https://github.com/leevydanomalik/hms-pm.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: 'main']], extensions: [[$class: 'WipeWorkspace']], userRemoteConfigs: [[credentialsId: 'bff11b86-4d33-4fb2-b02c-38e042b1b0b7', refspec: '+refs/tags/*:refs/remotes/origin/tag/*', url: 'https://github.com/leevydanomalik/HMS-PM.git']]])
                 script{
                     IMAGETAG = getLatestTag()
                 }
