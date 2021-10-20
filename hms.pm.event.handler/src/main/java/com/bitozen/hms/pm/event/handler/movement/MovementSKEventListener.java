@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Component
 @Slf4j
@@ -85,17 +86,15 @@ public class MovementSKEventListener {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
         MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
         MVSKDTO skdata = employee.getSks().get(0);
+        Predicate<MVSKDTO> target = item -> item.getSkID().equalsIgnoreCase(skdata.getSkID());
         if(data.isPresent()) {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
                 if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
                     List<MVSKDTO> sks = detail.getSks();
-                    sks.stream().forEach(sk -> {
-                        if(sk.getSkID().equalsIgnoreCase(skdata.getSkID())) {
-                            sk.setSkStatus(MVSKStatus.INACTIVE);
-                        }
-                    });
+                    sks.stream().filter(target).forEach(sk -> sk.getSkID());
+                    sks.removeIf(target);
                     detail.setSks(sks);
                 }
             });
