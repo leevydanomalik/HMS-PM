@@ -36,6 +36,14 @@ public interface MovementRepository extends MongoRepository<MovementEntryProject
             "{'mvStatus' : {$ne:?2}}]}", count=true)
     long countAllForWeb(String param, List<String> esIDs, String status);
 
+    @Query(value = "{$and: [{ 'employees.sks.skID' : {$regex: ?0,$options: 'i'}}" +
+            "{'mvStatus' : {$ne:?1}}]}")
+    Optional<MovementEntryProjection> findOneBySkID(String skID, String status);
+
+    @Query(value = "{$and: [{ 'employees.memos.memoID' : {$regex: ?0,$options: 'i'}}" +
+            "{'mvStatus' : {$ne:?1}}]}")
+    Optional<MovementEntryProjection> findOneByMemoID(String memoID, String status);
+
     @Aggregation({
             "{'$unwind':{'path' : '$employees'}}",
             "{'$unwind':{'path' : '$employees.sks'}}",

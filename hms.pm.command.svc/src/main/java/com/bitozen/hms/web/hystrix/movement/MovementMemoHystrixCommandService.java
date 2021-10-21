@@ -5,8 +5,11 @@ import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.command.movement.*;
+import com.bitozen.hms.pm.common.MVStatus;
 import com.bitozen.hms.pm.common.dto.command.movement.MVMemoCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MVMemoDeleteCommandDTO;
+import com.bitozen.hms.pm.repository.movement.MovementRepository;
+import com.bitozen.hms.projection.movement.MovementEntryProjection;
 import com.bitozen.hms.web.assembler.MovementAssembler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -36,6 +40,9 @@ public class MovementMemoHystrixCommandService {
 
     @Autowired
     MovementAssembler movAssembler;
+
+    @Autowired
+    MovementRepository repository;
 
     private final CommandGateway commandGateway;
 
@@ -153,37 +160,49 @@ public class MovementMemoHystrixCommandService {
     )
     public GenericResponseDTO<MVMemoDeleteCommandDTO> deleteMovementMemo(MVMemoDeleteCommandDTO dto) {
         GenericResponseDTO<MVMemoDeleteCommandDTO> response = new GenericResponseDTO().successResponse();
-        try {
-            MovementMemoDeleteCommand command = new MovementMemoDeleteCommand(
-                    dto.getMvID(),
-                    objectMapper.writeValueAsString(movAssembler.toMemoDTODeleteRequest(dto))
-            );
-            commandGateway.send(command, new CommandCallback<MovementMemoDeleteCommand, Object>() {
-                @Override
-                public void onResult(CommandMessage<? extends MovementMemoDeleteCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
-                    if (commandResultMessage.isExceptional() == false) {
-                        try {
-                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
-                                    ProjectType.CQRS, "Movement", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
-                                    new GenericResponseDTO().successResponse().getMessage())));
-                        } catch (JsonProcessingException ex) {
-                            log.info(ex.getMessage());
-                        }
-                    } else {
-                        response.setStatus(ResponseStatus.F);
-                        response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
-                        response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
-                        try {
-                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
-                                    ProjectType.CQRS, "Movement", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
-                        } catch (JsonProcessingException ex) {
-                            log.info(ex.getMessage());
+        Optional<MovementEntryProjection> movement = repository.findOneByMemoID(dto.getMemoID(), MVStatus.INACTIVE.name());
+        if(movement.isPresent()) {
+            try {
+                MovementMemoDeleteCommand command = new MovementMemoDeleteCommand(
+                        movement.get().getMvID(),
+                        objectMapper.writeValueAsString(movAssembler.toMemoDTODeleteRequest(dto))
+                );
+                commandGateway.send(command, new CommandCallback<MovementMemoDeleteCommand, Object>() {
+                    @Override
+                    public void onResult(CommandMessage<? extends MovementMemoDeleteCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                        if (commandResultMessage.isExceptional() == false) {
+                            try {
+                                log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                        ProjectType.CQRS, "Movement", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                        new GenericResponseDTO().successResponse().getMessage())));
+                            } catch (JsonProcessingException ex) {
+                                log.info(ex.getMessage());
+                            }
+                        } else {
+                            response.setStatus(ResponseStatus.F);
+                            response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                            response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
+                            try {
+                                log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
+                                        ProjectType.CQRS, "Movement", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
+                            } catch (JsonProcessingException ex) {
+                                log.info(ex.getMessage());
+                            }
                         }
                     }
-                }
-            });
-        } catch(Exception e) {
-            log.info(e.getMessage());
+                });
+            } catch(Exception e) {
+                log.info(e.getMessage());
+            }
+        } else {
+            try {
+                log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(LogOpsUtil.getLogResponse(
+                        ProjectType.CQRS, "Movement", new Date(), "Query", new GenericResponseDTO().noDataFoundResponse().getCode(),
+                        new GenericResponseDTO().noDataFoundResponse().getMessage())));
+                return new GenericResponseDTO().noDataFoundResponse();
+            } catch(Exception e) {
+                log.info(e.getMessage());
+            }
         }
         return response;
     }

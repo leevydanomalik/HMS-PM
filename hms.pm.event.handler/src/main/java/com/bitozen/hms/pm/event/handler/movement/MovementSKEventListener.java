@@ -91,12 +91,10 @@ public class MovementSKEventListener {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
-                if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
-                    List<MVSKDTO> sks = detail.getSks();
-                    sks.stream().filter(target).forEach(sk -> sk.getSkID());
-                    sks.removeIf(target);
-                    detail.setSks(sks);
-                }
+                List<MVSKDTO> sks = detail.getSks();
+                sks.stream().filter(target).forEach(sk -> sk.getSkID());
+                sks.removeIf(target);
+                detail.setSks(sks);
             });
             movement.setEmployees(employees);
             repository.save(movement);
