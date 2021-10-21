@@ -13,26 +13,26 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author Jeremia                                                                                                                                                                                                                                        
+ * @author Jeremia
  */
 @Repository
 @Transactional
-public interface EmploymentLetterRepository extends MongoRepository<EmploymentLetterEntryProjection, Long>{
-    
+public interface EmploymentLetterRepository extends MongoRepository<EmploymentLetterEntryProjection, Long> {
+
     Optional<EmploymentLetterEntryProjection> findFirstByOrderByIdDesc();
 
     Optional<EmploymentLetterEntryProjection> findOneByElIDAndElStatusNot(String elID, EmploymentLetterStatus elStatus);
 
-    @Query(value = "{$and: [{$or: [{ 'elID' : {$regex: ?0,$options: 'i'}}," +
-            "{'elDocNumber' : {$regex: ?0,$options: 'i'}}]}," +
-            "{'metadata.es.esID' : {$in : ?1}}," +
-            "{'elStatus' : {$ne:'INITIATE'}}]}")
-    Page<EmploymentLetterEntryProjection> findAllForWeb(String param, List<String> esIDs, Pageable pageable);
+    @Query(value = "{$and: [{$or: [{ 'elID' : {$regex: ?0,$options: 'i'}},"
+            + "{'elDocNumber' : {$regex: ?0,$options: 'i'}}]},"          
+            + "{'metadata.es.esID' : {$in : ?1}},"
+            + "{'elStatus' : {$ne:?2}}]}")
+    Page<EmploymentLetterEntryProjection> findAllForWeb(String param, List<String> esIDs, String elStatus, Pageable pageable);
 
-    @Query(value = "{$and: [{$or: [{ 'elID' : {$regex: ?0,$options: 'i'}}," +
-            "{'elDocNumber' : {$regex: ?0,$options: 'i'}}]}," +
-            "{'metadata.es.esID' : {$in : ?1}}," +
-            "{'elStatus' : {$ne:'INITIATE'}}]}", count=true)
-    long countAllForWeb(String param, List<String> esIDs);
-    
+    @Query(value = "{$and: [{$or: [{ 'elID' : {$regex: ?0,$options: 'i'}},"
+            + "{'elDocNumber' : {$regex: ?0,$options: 'i'}}]},"
+            + "{'metadata.es.esID' : {$in : ?1}},"
+            + "{'elStatus' : {$ne:?2}}]}", count = true)
+    long countAllForWeb(String param, List<String> esIDs, String elStatus);
+
 }

@@ -46,7 +46,7 @@ public class EmploymentLetterQueryHandler {
         Pageable pageable = PageRequest.of(query.getRequest().getOffset(), query.getRequest().getLimit(), Sort.by("creational.createdDate").descending());
         String param = String.valueOf(query.getRequest().getParams().get("param"));
         List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
-        Page<EmploymentLetterEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs, pageable);
+        Page<EmploymentLetterEntryProjection> results = repository.findAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs, EmploymentLetterStatus.INACTIVE.toString(), pageable);
         if(results.hasContent()){
             return assembler.toDTOs(results.getContent());
         }
@@ -57,7 +57,7 @@ public class EmploymentLetterQueryHandler {
     public Integer countEmploymentLetterForWeb(CountAllEmploymentLetterForWebQuery query) {
         String param = String.valueOf(query.getRequest().getParams().get("param"));
         List<String> esIDs = (List<String>) query.getRequest().getParams().get("esIDs");
-        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs)));
+        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWeb(String.valueOf(".*").concat(param).concat(".*"), esIDs, EmploymentLetterStatus.INACTIVE.toString())));
         return count;
     }
     
