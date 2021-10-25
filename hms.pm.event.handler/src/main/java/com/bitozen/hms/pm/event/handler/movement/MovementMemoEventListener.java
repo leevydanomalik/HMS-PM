@@ -92,12 +92,10 @@ public class MovementMemoEventListener {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
-                if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
                     List<MVMemoDTO> memos = detail.getMemos();
                     memos.stream().filter(target).forEach(memo -> memo.getMemoID());
                     memos.removeIf(target);
                     detail.setMemos(memos);
-                }
             });
             movement.setEmployees(employees);
             repository.save(movement);

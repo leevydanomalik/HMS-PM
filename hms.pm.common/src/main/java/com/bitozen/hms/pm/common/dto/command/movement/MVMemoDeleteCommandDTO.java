@@ -15,9 +15,6 @@ import java.util.Date;
 @ToString
 public class MVMemoDeleteCommandDTO implements Serializable {
 
-    private String mvID;
-    private String mvDetailID;
-
     private String memoID;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")

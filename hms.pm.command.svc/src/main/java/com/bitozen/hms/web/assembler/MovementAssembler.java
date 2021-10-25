@@ -226,7 +226,6 @@ public class MovementAssembler {
 
     public MVEmployeeDTO toSKDTODeleteRequest(MVSKDeleteCommandDTO dto) {
         MVEmployeeDTO empDTO = new MVEmployeeDTO();
-        empDTO.setMvDetailID(dto.getMvDetailID());
         empDTO.setSks(new ArrayList<>(Arrays.asList(
                 new MVSKDTO(
                         dto.getSkID(),
@@ -266,7 +265,6 @@ public class MovementAssembler {
 
     public MVEmployeeDTO toMemoDTODeleteRequest(MVMemoDeleteCommandDTO dto) {
         MVEmployeeDTO empDTO = new MVEmployeeDTO();
-        empDTO.setMvDetailID(dto.getMvDetailID());
         empDTO.setMemos(new ArrayList<>(Arrays.asList(
                 new MVMemoDTO(
                         dto.getMemoID(),
