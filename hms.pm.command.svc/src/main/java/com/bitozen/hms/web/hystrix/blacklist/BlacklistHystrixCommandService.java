@@ -10,7 +10,7 @@ import com.bitozen.hms.pm.command.blacklist.BlacklistDeleteCommand;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistDeleteCommandDTO;
-import com.bitozen.hms.web.helper.AssemblerHelper;
+import com.bitozen.hms.web.helper.PMAssembler;
 import com.bitozen.hms.web.helper.BizparHelper;
 import com.bitozen.hms.web.helper.EmployeeHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,7 +46,7 @@ public class BlacklistHystrixCommandService {
     EmployeeHelper employeeHelper;
 
     @Autowired
-    AssemblerHelper assemblerHelper;
+    PMAssembler pmAssembler;
 
     private final CommandGateway commandGateway;
 
@@ -81,7 +81,7 @@ public class BlacklistHystrixCommandService {
                     dto.getBlacklistState(),
                     dto.getCompRegulationChapter(),
                     dto.getCompRegulationChapterDesc(),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getCreatedBy(),
                     dto.getCreatedDate(),
@@ -149,7 +149,7 @@ public class BlacklistHystrixCommandService {
                     dto.getBlacklistState(),
                     dto.getCompRegulationChapter(),
                     dto.getCompRegulationChapterDesc(),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getUpdatedBy(),
                     dto.getUpdatedDate()

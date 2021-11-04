@@ -12,7 +12,7 @@ import com.bitozen.hms.pm.common.dto.command.termination.TerminationChangeComman
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationDeleteCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.TerminationStateAndStatusChangeCommandDTO;
-import com.bitozen.hms.web.helper.AssemblerHelper;
+import com.bitozen.hms.web.helper.PMAssembler;
 import com.bitozen.hms.web.helper.BizparHelper;
 import com.bitozen.hms.web.helper.EmployeeHelper;
 import com.bitozen.hms.web.helper.TerminationHelper;
@@ -55,7 +55,7 @@ public class TerminationHystrixCommandService {
     EmployeeHelper employeeHelper;
 
     @Autowired
-    AssemblerHelper assemblerHelper;
+    PMAssembler pmAssembler;
     
     @Autowired
     TerminationHelper terminationHelper;
@@ -99,7 +99,7 @@ public class TerminationHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getTmnReason())),
                     dto.getTmnState(),
                     dto.getTmnStatus(),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     objectMapper.writeValueAsString(dto.getBagPensionSpec()),
                     objectMapper.writeValueAsString(terminationHelper.toBagProlongedIllness(dto.getBagProlongedIllnessSpec())),
@@ -176,7 +176,7 @@ public class TerminationHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getTmnReason())),
                     dto.getTmnState(),
                     dto.getTmnStatus(),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     objectMapper.writeValueAsString(dto.getBagPensionSpec()),
                     objectMapper.writeValueAsString(terminationHelper.toBagProlongedIllness(dto.getBagProlongedIllnessSpec())),

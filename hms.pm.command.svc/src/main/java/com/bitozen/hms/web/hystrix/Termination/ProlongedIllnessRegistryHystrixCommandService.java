@@ -10,7 +10,7 @@ import com.bitozen.hms.pm.command.termination.ProlongedIllnessRegistryDeleteComm
 import com.bitozen.hms.pm.common.dto.command.termination.ProlongedIllnessRegistryChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.ProlongedIllnessRegistryCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.termination.ProlongedIllnessRegistryDeleteCommandDTO;
-import com.bitozen.hms.web.helper.AssemblerHelper;
+import com.bitozen.hms.web.helper.PMAssembler;
 import com.bitozen.hms.web.helper.BizparHelper;
 import com.bitozen.hms.web.helper.EmployeeHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,7 +48,7 @@ public class ProlongedIllnessRegistryHystrixCommandService {
     EmployeeHelper employeeHelper;
 
     @Autowired
-    AssemblerHelper assemblerHelper;
+    PMAssembler pmAssembler;
 
     private final CommandGateway commandGateway;
     
@@ -77,7 +77,7 @@ public class ProlongedIllnessRegistryHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getIlnessType())),
                     dto.getPiStatus(),
                     dto.getReason(),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getRecordID(),
                     dto.getCreatedBy(),
@@ -139,7 +139,7 @@ public class ProlongedIllnessRegistryHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getIlnessType())),
                     dto.getPiStatus(),
                     dto.getReason(),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getUpdatedBy(),
                     dto.getUpdatedDate()
