@@ -1,12 +1,15 @@
 package com.bitozen.hms.rabbit.consumer.blacklist;
 
-import com.bitozen.hms.common.dto.GenericResponseDTO;
-import com.bitozen.hms.common.dto.RabbitFileDTO;
+import com.bitozen.hms.common.dto.*;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.common.BlacklistStatus;
+import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistCreateCommandDTO;
 import com.bitozen.hms.pm.repository.blacklist.BlacklistRepository;
 import com.bitozen.hms.projection.blacklist.BlacklistEntryProjection;
+import com.bitozen.hms.web.helper.PMAssembler;
+import com.bitozen.hms.web.helper.BizparHelper;
+import com.bitozen.hms.web.helper.EmployeeHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.Base64;
@@ -48,6 +51,15 @@ public class BlacklistRabbitConsumer {
     @Autowired
     RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    BizparHelper bizparHelper;
+
+    @Autowired
+    EmployeeHelper employeeHelper;
+
+    @Autowired
+    PMAssembler pmAssembler;
+
     /**
      * upload file to minio as consumer rabbitmq
      *
@@ -85,6 +97,44 @@ public class BlacklistRabbitConsumer {
             } catch (JsonProcessingException jpex) {
                 log.info(jpex.getMessage());
             }
+        }
+    }
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "q.blacklist-migration", durable = "true"),
+            exchange = @Exchange(name = "x-hms-pm", type = ExchangeTypes.TOPIC, durable = "true"),
+            key = "blacklist-migration",
+            ignoreDeclarationExceptions = "true"), concurrency = "1")
+    public void postBlacklistMigrationRequest(BlacklistCreateCommandDTO dto) {
+        log.info("Start ===>>>>", dto);
+        try {
+            repository.save(new BlacklistEntryProjection(
+                    repository.count() == 0 ? 1 : repository.findFirstByOrderByIdDesc().get().getId() + 1,
+                    dto.getBlacklistID(),
+                    dto.getBlacklistSPKNumber(),
+                    dto.getBlacklistStartDate(),
+                    dto.getBlacklistEndDate(),
+                    dto.getBlacklistNotes(),
+                    bizparHelper.convertBizpar(dto.getBlacklistType()),
+                    dto.getIsPermanent(),
+                    employeeHelper.findEmployeeOptimizeByKey(dto.getEmployee()),
+                    employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor()),
+                    dto.getBlacklistDocURL(),
+                    dto.getIsFinalApprove(),
+                    dto.getBlacklistStatus(),
+                    dto.getBlacklistState(),
+                    dto.getCompRegulationChapter(),
+                    dto.getCompRegulationChapterDesc(),
+                    pmAssembler.toMetadata(dto.getMetadata()),
+                    dto.getToken(),
+                    new CreationalSpecificationDTO(dto.getCreatedBy(),
+                            dto.getCreatedDate(),
+                            null,
+                            null),
+                    dto.getRecordID()
+            ));
+        } catch (Exception e) {
+            log.info(e.getMessage());
         }
     }
 }

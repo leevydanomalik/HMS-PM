@@ -12,10 +12,10 @@ import com.bitozen.hms.pm.common.dto.command.employmentletter.EmploymentLetterCh
 import com.bitozen.hms.pm.common.dto.command.employmentletter.EmploymentLetterCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.employmentletter.EmploymentLetterDeleteCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.employmentletter.EmploymentLetterStateAndEmploymentLetterStatusChangeCommandDTO;
-import com.bitozen.hms.web.helper.AssemblerHelper;
 import com.bitozen.hms.web.helper.BizparHelper;
 import com.bitozen.hms.web.helper.EmployeeHelper;
 import com.bitozen.hms.web.helper.EmploymentLetterHelper;
+import com.bitozen.hms.web.helper.PMAssembler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -60,7 +60,7 @@ public class EmploymentLetterHystrixCommandService {
     EmployeeHelper employeeHelper;
 
     @Autowired
-    AssemblerHelper assemblerHelper;
+    PMAssembler pmAssembler;
 
     private final CommandGateway commandGateway;
 
@@ -93,7 +93,7 @@ public class EmploymentLetterHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getReqType())),
                     objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor())),
                     objectMapper.writeValueAsString(employmentLetterHelper.toVisaSpecification(dto.getVisaSpec())),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getCreatedBy(),
                     dto.getCreatedDate(),
@@ -158,7 +158,7 @@ public class EmploymentLetterHystrixCommandService {
                     objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getReqType())),
                     objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor())),
                     objectMapper.writeValueAsString(employmentLetterHelper.toVisaSpecification(dto.getVisaSpec())),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getUpdatedBy(),
                     dto.getUpdatedDate()

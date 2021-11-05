@@ -11,7 +11,7 @@ import com.bitozen.hms.pm.common.dto.command.movement.MovementChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MovementCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MovementDeleteCommandDTO;
 import com.bitozen.hms.web.assembler.MovementAssembler;
-import com.bitozen.hms.web.helper.AssemblerHelper;
+import com.bitozen.hms.web.helper.PMAssembler;
 import com.bitozen.hms.web.helper.BizparHelper;
 import com.bitozen.hms.web.helper.EmployeeHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,7 +47,7 @@ public class MovementHystrixCommandService {
     EmployeeHelper employeeHelper;
 
     @Autowired
-    AssemblerHelper assemblerHelper;
+    PMAssembler pmAssembler;
 
     @Autowired
     MovementAssembler movAssembler;
@@ -82,7 +82,7 @@ public class MovementHystrixCommandService {
                     objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor())),
                     objectMapper.writeValueAsString(movAssembler.toAssignmentDTO(dto.getAssignment())),
                     objectMapper.writeValueAsString(movAssembler.toMVEmployeeDTOs(dto.getEmployees())),
-                    objectMapper.writeValueAsString(assemblerHelper.convertDocuments(dto.getMvDocs())),
+                    objectMapper.writeValueAsString(pmAssembler.convertDocuments(dto.getMvDocs())),
                     objectMapper.writeValueAsString(movAssembler.toBenefitDTO(dto.getMvBenefitBefore())),
                     objectMapper.writeValueAsString(movAssembler.toBenefitDTO(dto.getMvBenefitAfter())),
                     objectMapper.writeValueAsString(movAssembler.toFacilityDTO(dto.getMvFacilityBefore())),
@@ -90,7 +90,7 @@ public class MovementHystrixCommandService {
                     objectMapper.writeValueAsString(dto.getMvPayroll()),
                     objectMapper.writeValueAsString(movAssembler.toPositionDTO(dto.getMvPosition())),
                     objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getCreatedBy(),
                     dto.getCreatedDate(),
@@ -155,7 +155,7 @@ public class MovementHystrixCommandService {
                     objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor())),
                     objectMapper.writeValueAsString(movAssembler.toAssignmentDTO(dto.getAssignment())),
                     objectMapper.writeValueAsString(movAssembler.toMVEmployeeDTOs(dto.getEmployees())),
-                    objectMapper.writeValueAsString(assemblerHelper.convertDocuments(dto.getMvDocs())),
+                    objectMapper.writeValueAsString(pmAssembler.convertDocuments(dto.getMvDocs())),
                     objectMapper.writeValueAsString(movAssembler.toBenefitDTO(dto.getMvBenefitBefore())),
                     objectMapper.writeValueAsString(movAssembler.toBenefitDTO(dto.getMvBenefitAfter())),
                     objectMapper.writeValueAsString(movAssembler.toFacilityDTO(dto.getMvFacilityBefore())),
@@ -163,7 +163,7 @@ public class MovementHystrixCommandService {
                     objectMapper.writeValueAsString(dto.getMvPayroll()),
                     objectMapper.writeValueAsString(movAssembler.toPositionDTO(dto.getMvPosition())),
                     objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
-                    objectMapper.writeValueAsString(assemblerHelper.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getUpdatedBy(),
                     dto.getUpdatedDate()
