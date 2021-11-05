@@ -2,11 +2,17 @@ package com.bitozen.hms.rabbit.consumer.termination;
 
 import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.dto.RabbitFileDTO;
+import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
+import com.bitozen.hms.pm.command.termination.ProlongedIllnessRegistryCreateCommand;
 import com.bitozen.hms.pm.common.ProlongedIllnessStatus;
+import com.bitozen.hms.pm.common.dto.command.termination.ProlongedIllnessRegistryCreateCommandDTO;
 import com.bitozen.hms.pm.repository.termination.ProlongedIllnessRegistryRepository;
 import com.bitozen.hms.projection.termination.ProlongedIllnessRegistryEntryProjection;
+import com.bitozen.hms.web.helper.BizparHelper;
+import com.bitozen.hms.web.helper.EmployeeHelper;
+import com.bitozen.hms.web.helper.PMAssembler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.Base64;
@@ -21,6 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.commandhandling.CommandCallback;
+import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.commandhandling.CommandResultMessage;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -50,6 +60,22 @@ public class ProlongedIllnessRegistryRabbitConsumer {
 
     @Autowired
     RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    BizparHelper bizparHelper;
+
+    @Autowired
+    EmployeeHelper employeeHelper;
+
+    @Autowired
+    PMAssembler pmAssembler;
+
+    private final CommandGateway commandGateway;
+
+    @Autowired
+    public ProlongedIllnessRegistryRabbitConsumer(CommandGateway commandGateway){
+        this.commandGateway = commandGateway;
+    }
 
     /**
      * upload file to minio as consumer rabbitmq
@@ -88,6 +114,47 @@ public class ProlongedIllnessRegistryRabbitConsumer {
             } catch (JsonProcessingException jpex) {
                 log.info(jpex.getMessage());
             }
+        }
+    }
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "q.prolonged-illness-registry-migration", durable = "true"),
+            exchange = @Exchange(name = "x-hms-pm", type = ExchangeTypes.TOPIC, durable = "true"),
+            key = "prolonged-illness-registry-migration",
+            ignoreDeclarationExceptions = "true"), concurrency = "1")
+    public void postTerminationMigrationRequest(ProlongedIllnessRegistryCreateCommandDTO dto) {
+        log.info("Start ===>>>>", dto);
+        try {
+            ProlongedIllnessRegistryCreateCommand command = new ProlongedIllnessRegistryCreateCommand(
+                    dto.getPiID(),
+                    dto.getStartDate(),
+                    dto.getEndDate(),
+                    dto.getDocURL(),
+                    objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getEmployee())),
+                    objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor())),
+                    objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getIlnessType())),
+                    dto.getPiStatus(),
+                    dto.getReason(),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(dto.getToken()),
+                    dto.getRecordID(),
+                    dto.getCreatedBy(),
+                    dto.getCreatedDate()
+            );
+            commandGateway.send(command, new CommandCallback<ProlongedIllnessRegistryCreateCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends ProlongedIllnessRegistryCreateCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    try {
+                        log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                ProjectType.CQRS, "Prolonged Illness Registry", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                new GenericResponseDTO().successResponse().getMessage())));
+                    } catch (JsonProcessingException ex) {
+                        log.info(ex.getMessage());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            log.info(e.getMessage());
         }
     }
 }

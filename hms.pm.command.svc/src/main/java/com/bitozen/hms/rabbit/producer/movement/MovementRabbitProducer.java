@@ -1,6 +1,7 @@
 package com.bitozen.hms.rabbit.producer.movement;
 
 import com.bitozen.hms.common.dto.RabbitFileDTO;
+import com.bitozen.hms.pm.common.dto.command.movement.MovementCreateCommandDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,9 @@ public class MovementRabbitProducer {
 
     public void movementMemoDocumentUploadProducer(RabbitFileDTO dto) {
         rabbitTemplate.convertAndSend("x-hms-pm", "movement-memo-upload-image", dto);
+    }
+
+    public void movementMigrationProducer(MovementCreateCommandDTO dto) {
+        rabbitTemplate.convertAndSend("x-hms-pm", "movement-migration", dto);
     }
 }

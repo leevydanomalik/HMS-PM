@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
 @Slf4j
-public class BlacklistMigrationRESTController {
+public class BlacklistMigrationController {
 
     @Autowired
     private BlacklistMigrationHystrixService service;
