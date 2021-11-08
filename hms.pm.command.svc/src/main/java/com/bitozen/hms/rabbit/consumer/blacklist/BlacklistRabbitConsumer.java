@@ -1,8 +1,10 @@
 package com.bitozen.hms.rabbit.consumer.blacklist;
 
 import com.bitozen.hms.common.dto.*;
+import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
+import com.bitozen.hms.pm.command.blacklist.BlacklistCreateCommand;
 import com.bitozen.hms.pm.common.BlacklistStatus;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistCreateCommandDTO;
 import com.bitozen.hms.pm.repository.blacklist.BlacklistRepository;
@@ -16,6 +18,10 @@ import com.google.api.client.util.Base64;
 import com.jlefebure.spring.boot.minio.MinioException;
 import com.jlefebure.spring.boot.minio.MinioService;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.commandhandling.CommandCallback;
+import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.commandhandling.CommandResultMessage;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -59,6 +65,13 @@ public class BlacklistRabbitConsumer {
 
     @Autowired
     PMAssembler pmAssembler;
+
+    private final CommandGateway commandGateway;
+
+    @Autowired
+    public BlacklistRabbitConsumer(CommandGateway commandGateway){
+        this.commandGateway = commandGateway;
+    }
 
     /**
      * upload file to minio as consumer rabbitmq
@@ -108,31 +121,40 @@ public class BlacklistRabbitConsumer {
     public void postBlacklistMigrationRequest(BlacklistCreateCommandDTO dto) {
         log.info("Start ===>>>>", dto);
         try {
-            repository.save(new BlacklistEntryProjection(
-                    repository.count() == 0 ? 1 : repository.findFirstByOrderByIdDesc().get().getId() + 1,
+            BlacklistCreateCommand command = new BlacklistCreateCommand(
                     dto.getBlacklistID(),
                     dto.getBlacklistSPKNumber(),
                     dto.getBlacklistStartDate(),
                     dto.getBlacklistEndDate(),
                     dto.getBlacklistNotes(),
-                    bizparHelper.convertBizpar(dto.getBlacklistType()),
+                    objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getBlacklistType())),
                     dto.getIsPermanent(),
-                    employeeHelper.findEmployeeOptimizeByKey(dto.getEmployee()),
-                    employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor()),
+                    objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getEmployee())),
+                    objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor())),
                     dto.getBlacklistDocURL(),
                     dto.getIsFinalApprove(),
                     dto.getBlacklistStatus(),
                     dto.getBlacklistState(),
                     dto.getCompRegulationChapter(),
                     dto.getCompRegulationChapterDesc(),
-                    pmAssembler.toMetadata(dto.getMetadata()),
-                    dto.getToken(),
-                    new CreationalSpecificationDTO(dto.getCreatedBy(),
-                            dto.getCreatedDate(),
-                            null,
-                            null),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(dto.getToken()),
+                    dto.getCreatedBy(),
+                    dto.getCreatedDate(),
                     dto.getRecordID()
-            ));
+            );
+            commandGateway.send(command, new CommandCallback<BlacklistCreateCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends BlacklistCreateCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    try {
+                        log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                ProjectType.CQRS, "Blacklist", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                new GenericResponseDTO().successResponse().getMessage())));
+                    } catch (JsonProcessingException ex) {
+                        log.info(ex.getMessage());
+                    }
+                }
+            });
         } catch (Exception e) {
             log.info(e.getMessage());
         }

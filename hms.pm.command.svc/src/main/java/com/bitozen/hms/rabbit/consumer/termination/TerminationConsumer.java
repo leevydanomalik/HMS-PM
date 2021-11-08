@@ -1,13 +1,23 @@
 package com.bitozen.hms.rabbit.consumer.termination;
 
+import com.bitozen.hms.common.dto.CreationalSpecificationDTO;
 import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.dto.RabbitFileDTO;
+import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
+import com.bitozen.hms.pm.command.termination.TerminationCreateCommand;
 import com.bitozen.hms.pm.common.TerminationStatus;
+import com.bitozen.hms.pm.common.dto.command.employmentletter.EmploymentLetterCreateCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.termination.TerminationCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.query.termination.TerminationDocumentDTO;
 import com.bitozen.hms.pm.repository.termination.TerminationRepository;
+import com.bitozen.hms.projection.employmentletter.EmploymentLetterEntryProjection;
 import com.bitozen.hms.projection.termination.TerminationEntryProjection;
+import com.bitozen.hms.web.helper.BizparHelper;
+import com.bitozen.hms.web.helper.EmployeeHelper;
+import com.bitozen.hms.web.helper.PMAssembler;
+import com.bitozen.hms.web.helper.TerminationHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.Base64;
@@ -24,6 +34,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.commandhandling.CommandCallback;
+import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.commandhandling.CommandResultMessage;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -45,6 +59,25 @@ public class TerminationConsumer {
     
     @Autowired
     private MinioService minioService;
+
+    @Autowired
+    BizparHelper bizparHelper;
+
+    @Autowired
+    EmployeeHelper employeeHelper;
+
+    @Autowired
+    PMAssembler pmAssembler;
+
+    @Autowired
+    TerminationHelper terminationHelper;
+
+    private final CommandGateway commandGateway;
+
+    @Autowired
+    public TerminationConsumer(CommandGateway commandGateway){
+        this.commandGateway = commandGateway;
+    }
     
       @RabbitListener(bindings = @QueueBinding(
             value = @Queue(name = "q.termination-upload-document", durable = "true"),
@@ -91,5 +124,58 @@ public class TerminationConsumer {
             }
         }
     }
-    
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "q.termination-migration", durable = "true"),
+            exchange = @Exchange(name = "x-hms-pm", type = ExchangeTypes.TOPIC, durable = "true"),
+            key = "termination-migration",
+            ignoreDeclarationExceptions = "true"), concurrency = "1")
+    public void postTerminationMigrationRequest(TerminationCreateCommandDTO dto) {
+        log.info("Start ===>>>>", dto);
+        try {
+            TerminationCreateCommand command = new TerminationCreateCommand(
+                    dto.getTmnID(),
+                    dto.getTmnNotes(),
+                    dto.getBpjsHTDocNumber(),
+                    dto.getBpjsPensionDocNumber(),
+                    objectMapper.writeValueAsString(dto.getDocCopies()),
+                    dto.getIsCancelFinalApprove(),
+                    dto.getIsExecuted(),
+                    dto.getIsFinalApprove(),
+                    dto.getMemoDocNumber(),
+                    objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getEmployee())),
+                    objectMapper.writeValueAsString(employeeHelper.findEmployeeOptimizeByKey(dto.getRequestor())),
+                    dto.getSkDocNumber(),
+                    dto.getSkdtDocNumber(),
+                    objectMapper.writeValueAsString(terminationHelper.toDocumentDTOs(dto.getTmnDocs())),
+                    dto.getTmnEffectiveDate(),
+                    dto.getTmnReqDate(),
+                    dto.getTmnPphEndDate(),
+                    objectMapper.writeValueAsString(bizparHelper.convertBizpar(dto.getTmnReason())),
+                    dto.getTmnState(),
+                    dto.getTmnStatus(),
+                    objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
+                    objectMapper.writeValueAsString(dto.getToken()),
+                    objectMapper.writeValueAsString(dto.getBagPensionSpec()),
+                    objectMapper.writeValueAsString(terminationHelper.toBagProlongedIllness(dto.getBagProlongedIllnessSpec())),
+                    dto.getCreatedBy(),
+                    dto.getCreatedDate(),
+                    dto.getRecordID()
+            );
+            commandGateway.send(command, new CommandCallback<TerminationCreateCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends TerminationCreateCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                    ProjectType.CQRS, "Termination", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                    new GenericResponseDTO().successResponse().getMessage())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                }
+            });
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+    }
 }
