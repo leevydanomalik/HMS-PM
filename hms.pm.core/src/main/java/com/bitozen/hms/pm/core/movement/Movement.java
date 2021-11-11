@@ -109,6 +109,18 @@ public class Movement {
                 command.getToken()
         ));
     }
+    
+    @CommandHandler
+    public void handle(MovementChangeStateAndStatusCommand command){
+        AggregateLifecycle.apply(new MovementChangeStateAndStatusEvent(
+                command.getMvID(),
+                command.getMvStatus(),
+                command.getMvState(),
+                command.getIsFinalApprove(),
+                command.getUpdatedBy(),
+                command.getUpdatedDate()   
+        ));
+    }
 
     @CommandHandler
     public void handle(MovementDeleteCommand command) {
@@ -219,6 +231,16 @@ public class Movement {
         this.refRecRequest = event.getRefRecRequest();
         this.metadata = event.getMetadata();
         this.token = event.getToken();
+        this.updatedBy = event.getUpdatedBy();
+        this.updatedDate = event.getUpdatedDate();
+    }
+    
+    @EventSourcingHandler
+    public void on(MovementChangeStateAndStatusEvent event){
+        this.mvID = event.getMvID();
+        this.mvStatus = event.getMvStatus();
+        this.mvState = event.getMvState();
+        this.isFinalApprove = event.getIsFinalApprove();
         this.updatedBy = event.getUpdatedBy();
         this.updatedDate = event.getUpdatedDate();
     }

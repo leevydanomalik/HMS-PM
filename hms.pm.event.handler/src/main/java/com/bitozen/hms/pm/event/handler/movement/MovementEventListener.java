@@ -9,6 +9,7 @@ import com.bitozen.hms.common.dto.share.EmployeeOptimizeDTO;
 import com.bitozen.hms.pm.common.MVStatus;
 import com.bitozen.hms.pm.common.dto.query.movement.*;
 import com.bitozen.hms.pm.event.movement.MovementChangeEvent;
+import com.bitozen.hms.pm.event.movement.MovementChangeStateAndStatusEvent;
 import com.bitozen.hms.pm.event.movement.MovementCreateEvent;
 import com.bitozen.hms.pm.event.movement.MovementDeleteEvent;
 import com.bitozen.hms.pm.repository.movement.MovementRepository;
@@ -105,6 +106,18 @@ public class MovementEventListener {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
         data.get().setMvStatus(MVStatus.INACTIVE);
         data.get().getCreational().setModifiedBy(event.getUpdatedBy());
+        repository.save(data.get());
+    }
+    
+    @SneakyThrows
+    @EventHandler
+    public void on(MovementChangeStateAndStatusEvent event){
+        Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
+        data.get().setMvStatus(event.getMvStatus());
+        data.get().setMvState(event.getMvState());
+        data.get().setIsFinalApprove(event.getIsFinalApprove());
+        data.get().getCreational().setModifiedBy(event.getUpdatedBy());
+        data.get().getCreational().setModifiedDate(event.getUpdatedDate());
         repository.save(data.get());
     }
 }

@@ -5,11 +5,13 @@ import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.command.movement.MovementChangeCommand;
+import com.bitozen.hms.pm.command.movement.MovementChangeStateAndStatusCommand;
 import com.bitozen.hms.pm.command.movement.MovementCreateCommand;
 import com.bitozen.hms.pm.command.movement.MovementDeleteCommand;
 import com.bitozen.hms.pm.common.dto.command.movement.MovementChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MovementCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MovementDeleteCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.movement.MovementStateAndMovementStatusChangeCommandDTO;
 import com.bitozen.hms.web.assembler.MovementAssembler;
 import com.bitozen.hms.web.helper.PMAssembler;
 import com.bitozen.hms.web.helper.BizparHelper;
@@ -250,6 +252,60 @@ public class MovementHystrixCommandService {
 
     private GenericResponseDTO<MovementDeleteCommandDTO> defaultDeleteMovementFallback(MovementDeleteCommandDTO dto, Throwable e) throws IOException {
         return new GenericResponseDTO<MovementDeleteCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
+    
+    @HystrixCommand(fallbackMethod = "defaultPutMovementStatusAndStateFallback")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findOneByMovementIDCache", allEntries = true),
+                    @CacheEvict(value = "getAllMovementWebCache", allEntries = true)
+            }
+    )
+    public GenericResponseDTO<MovementStateAndMovementStatusChangeCommandDTO> putMovementStateAndStatus(MovementStateAndMovementStatusChangeCommandDTO dto) {
+        GenericResponseDTO<MovementStateAndMovementStatusChangeCommandDTO> response = new GenericResponseDTO().successResponse();
+        try {
+            MovementChangeStateAndStatusCommand command = new MovementChangeStateAndStatusCommand(
+                    dto.getMvID(),
+                    dto.getMvStatus(),
+                    dto.getMvState(),
+                    dto.getIsFinalApprove(),
+                    dto.getUpdatedBy(),
+                    dto.getUpdatedDate()
+            );
+            commandGateway.send(command, new CommandCallback<MovementChangeStateAndStatusCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends MovementChangeStateAndStatusCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    if (commandResultMessage.isExceptional() == false) {
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                    new GenericResponseDTO().successResponse().getMessage())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    } else {
+                        response.setStatus(ResponseStatus.F);
+                        response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                        response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    }
+                }
+            });
+        } catch(Exception e) {
+            log.info(e.getMessage());
+        }
+        return response;
+    }
+
+    private GenericResponseDTO<MovementStateAndMovementStatusChangeCommandDTO> defaultPutMovementStatusAndStateFallback(MovementStateAndMovementStatusChangeCommandDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<MovementStateAndMovementStatusChangeCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
