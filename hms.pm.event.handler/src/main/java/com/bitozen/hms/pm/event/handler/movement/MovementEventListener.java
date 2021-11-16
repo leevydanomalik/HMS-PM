@@ -59,7 +59,7 @@ public class MovementEventListener {
                 mapper.readValue(event.getMvFacilityAfter(), MVFacilityDTO.class),
                 mapper.readValue(event.getMvPayroll(), MVPayrollDTO.class),
                 mapper.readValue(event.getMvPosition(), MVPositionDTO.class),
-                mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class),
+                event.getRefRecRequest() == null ? null : mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class),
                 mapper.readValue(event.getMetadata(), MetadataDTO.class),
                 mapper.readValue(event.getToken(), GenericAccessTokenDTO.class),
                 new CreationalSpecificationDTO(event.getCreatedBy(),
@@ -92,7 +92,7 @@ public class MovementEventListener {
         data.get().setMvFacilityAfter(mapper.readValue(event.getMvFacilityAfter(), MVFacilityDTO.class));
         data.get().setMvPayroll(mapper.readValue(event.getMvPayroll(), MVPayrollDTO.class));
         data.get().setMvPosition(mapper.readValue(event.getMvPosition(), MVPositionDTO.class));
-        data.get().setRefRecRequest(mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class));
+        data.get().setRefRecRequest( event.getRefRecRequest() == null ? null : mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class));
         data.get().setMetadata(mapper.readValue(event.getMetadata(), MetadataDTO.class));
         data.get().setToken(mapper.readValue(event.getToken(), GenericAccessTokenDTO.class));
         data.get().getCreational().setModifiedBy(event.getUpdatedBy());
