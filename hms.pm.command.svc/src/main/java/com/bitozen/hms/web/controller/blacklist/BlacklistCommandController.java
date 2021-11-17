@@ -6,6 +6,7 @@ import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistDeleteCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistStateAndBlacklistStatusChangeCommandDTO;
 import com.bitozen.hms.web.hystrix.blacklist.BlacklistHystrixCommandService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,6 +94,25 @@ public class BlacklistCommandController {
             log.info(ex.getMessage());
         }
         GenericResponseDTO<BlacklistDeleteCommandDTO> response = service.deleteBlacklist(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    
+    @RequestMapping(value = "/command/put.blacklist.state.and.status",
+            method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GenericResponseDTO<BlacklistStateAndBlacklistStatusChangeCommandDTO>> putBlacklistStateAndStatus(@RequestBody BlacklistStateAndBlacklistStatusChangeCommandDTO dto) {
+        try {
+            log.info(objectMapper.writeValueAsString(
+                    LogOpsUtil.getLogOps(ProjectType.CQRS, "Blacklist", BlacklistCommandController.class.getName(),
+                            httpRequest.getRequestURL().toString(),
+                            new Date(), "Command", "Update",
+                            dto.getUpdatedBy(),
+                            dto)));
+        } catch (JsonProcessingException ex) {
+            log.info(ex.getMessage());
+        }
+        GenericResponseDTO<BlacklistStateAndBlacklistStatusChangeCommandDTO> response = service.changeBlacklistStateAndStatus(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

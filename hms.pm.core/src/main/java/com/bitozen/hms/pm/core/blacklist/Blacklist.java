@@ -3,11 +3,13 @@ package com.bitozen.hms.pm.core.blacklist;
 import com.bitozen.hms.pm.command.blacklist.BlacklistChangeCommand;
 import com.bitozen.hms.pm.command.blacklist.BlacklistCreateCommand;
 import com.bitozen.hms.pm.command.blacklist.BlacklistDeleteCommand;
+import com.bitozen.hms.pm.command.blacklist.BlacklistStateAndStatusChangeCommand;
 import com.bitozen.hms.pm.common.BlacklistState;
 import com.bitozen.hms.pm.common.BlacklistStatus;
 import com.bitozen.hms.pm.event.blacklist.BlacklistChangeEvent;
 import com.bitozen.hms.pm.event.blacklist.BlacklistCreateEvent;
 import com.bitozen.hms.pm.event.blacklist.BlacklistDeleteEvent;
+import com.bitozen.hms.pm.event.blacklist.BlacklistStateAndStatusChangeEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -106,6 +108,18 @@ public class Blacklist {
                 command.getUpdatedBy()
         ));
     }
+    
+    @CommandHandler
+    public void handle(BlacklistStateAndStatusChangeCommand command) {
+        AggregateLifecycle.apply(new BlacklistStateAndStatusChangeEvent(
+                command.getUpdatedBy(),
+                command.getUpdatedDate(),
+                command.getBlacklistID(),
+                command.getBlacklistState(),
+                command.getBlacklistStatus(), 
+                command.getIsFinalApprove()
+        ));
+    }
 
     @EventSourcingHandler
     public void on(BlacklistCreateEvent event) {
@@ -158,5 +172,15 @@ public class Blacklist {
     public void on(BlacklistDeleteEvent event) {
         this.blacklistID = event.getBlacklistID();
         this.updatedBy = event.getUpdatedBy();
+    }
+    
+    @EventSourcingHandler
+    public void on(BlacklistStateAndStatusChangeEvent event) {
+        this.blacklistID = event.getBlacklistID();
+        this.blacklistState = event.getBlacklistState();
+        this.blacklistStatus = event.getBlacklistStatus();
+        this.isFinalApprove = event.getIsFinalApprove();
+        this.updatedBy = event.getUpdatedBy();
+        this.updatedDate = event.getUpdatedDate();
     }
 }

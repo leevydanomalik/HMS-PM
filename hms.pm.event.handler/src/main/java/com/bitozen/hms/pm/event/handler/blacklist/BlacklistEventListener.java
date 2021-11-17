@@ -6,11 +6,15 @@ import com.bitozen.hms.common.dto.MetadataDTO;
 import com.bitozen.hms.common.dto.share.BizparOptimizeDTO;
 import com.bitozen.hms.common.dto.share.EmployeeOptimizeDTO;
 import com.bitozen.hms.pm.common.BlacklistStatus;
+import com.bitozen.hms.pm.common.TerminationStatus;
 import com.bitozen.hms.pm.event.blacklist.BlacklistChangeEvent;
 import com.bitozen.hms.pm.event.blacklist.BlacklistCreateEvent;
 import com.bitozen.hms.pm.event.blacklist.BlacklistDeleteEvent;
+import com.bitozen.hms.pm.event.blacklist.BlacklistStateAndStatusChangeEvent;
+import com.bitozen.hms.pm.event.termination.TerminationStateAndStatusChangeEvent;
 import com.bitozen.hms.pm.repository.blacklist.BlacklistRepository;
 import com.bitozen.hms.projection.blacklist.BlacklistEntryProjection;
+import com.bitozen.hms.projection.termination.TerminationEntryProjection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -92,5 +96,20 @@ public class BlacklistEventListener {
         data.get().setBlacklistStatus(BlacklistStatus.INACTIVE);
         data.get().getCreational().setModifiedBy(event.getUpdatedBy());
         repository.save(data.get());
+    }
+    
+    @SneakyThrows
+    @EventHandler
+    public void on(BlacklistStateAndStatusChangeEvent event) {
+        try {
+            Optional<BlacklistEntryProjection> data = repository.findOneByBlacklistIDAndBlacklistStatusNot(event.getBlacklistID(), BlacklistStatus.INACTIVE);
+            data.get().setBlacklistState(event.getBlacklistState());
+            data.get().setBlacklistStatus(event.getBlacklistStatus());
+            data.get().getCreational().setModifiedBy(event.getUpdatedBy());
+            data.get().getCreational().setModifiedDate(event.getUpdatedDate());
+            repository.save(data.get());
+        } catch (Exception e) {
+            log.info(e.getMessage());    
+        }
     }
 }

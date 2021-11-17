@@ -7,9 +7,11 @@ import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.command.blacklist.BlacklistChangeCommand;
 import com.bitozen.hms.pm.command.blacklist.BlacklistCreateCommand;
 import com.bitozen.hms.pm.command.blacklist.BlacklistDeleteCommand;
+import com.bitozen.hms.pm.command.blacklist.BlacklistStateAndStatusChangeCommand;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistChangeCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistDeleteCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.blacklist.BlacklistStateAndBlacklistStatusChangeCommandDTO;
 import com.bitozen.hms.web.helper.PMAssembler;
 import com.bitozen.hms.web.helper.BizparHelper;
 import com.bitozen.hms.web.helper.EmployeeHelper;
@@ -30,7 +32,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import org.springframework.transaction.TransactionSystemException;
 
 @Service
 @Slf4j
@@ -236,6 +243,75 @@ public class BlacklistHystrixCommandService {
 
     private GenericResponseDTO<BlacklistDeleteCommandDTO> defaultDeleteBlacklistFallback(BlacklistDeleteCommandDTO dto, Throwable e) throws IOException {
         return new GenericResponseDTO<BlacklistDeleteCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
+    
+    @HystrixCommand(fallbackMethod = "defaultPutBlacklistStateAndStatusFallback")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findOneByBlacklistIDCache", allEntries = true),
+                    @CacheEvict(value = "getAllBlacklistWebCache", allEntries = true)
+            }
+    )
+    public GenericResponseDTO<BlacklistStateAndBlacklistStatusChangeCommandDTO> changeBlacklistStateAndStatus(BlacklistStateAndBlacklistStatusChangeCommandDTO dto) {
+        GenericResponseDTO<BlacklistStateAndBlacklistStatusChangeCommandDTO> response = new GenericResponseDTO().successResponse();
+        try {
+            BlacklistStateAndStatusChangeCommand command = new BlacklistStateAndStatusChangeCommand(
+                    dto.getBlacklistID().toUpperCase(),
+                    dto.getBlacklistState(),
+                    dto.getBlacklistStatus(),
+                    dto.getIsFinalApprove(),
+                    dto.getUpdatedBy() == null ? "SYSTEM" : dto.getUpdatedBy(),
+                    dto.getUpdatedDate() == null ? new Date() : dto.getUpdatedDate());
+
+            commandGateway.send(command, new CommandCallback<BlacklistStateAndStatusChangeCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends BlacklistStateAndStatusChangeCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    if (commandResultMessage.isExceptional() == false) {
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                    ProjectType.CQRS, "Blacklist", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                    new GenericResponseDTO().successResponse().getMessage())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    } else {
+                        response.setStatus(ResponseStatus.F);
+                        response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                        response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
+                                    ProjectType.CQRS, "Blacklist", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    }
+                }
+            });
+            return response;
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            try {
+                log.info(objectMapper.writeValueAsString(
+                        LogOpsUtil.getErrorResponse(ProjectType.CQRS, "Blacklist", new Date(), "Command", String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getStackTrace())));
+            } catch (JsonProcessingException ex) {
+                log.info(ex.getMessage());
+            }
+
+            if (e instanceof TransactionSystemException) {
+                if (((TransactionSystemException) e).getRootCause() instanceof ConstraintViolationException) {
+                    Set<ConstraintViolation<?>> data = ((ConstraintViolationException) ((TransactionSystemException) e).getRootCause()).getConstraintViolations();
+                    String msg = new ArrayList<>(data).get(0).getMessage();
+                    return new GenericResponseDTO().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), msg);
+                }
+            }
+            return new GenericResponseDTO().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getLocalizedMessage());
+        }
+    }
+    
+    private GenericResponseDTO<BlacklistStateAndBlacklistStatusChangeCommandDTO> defaultPutBlacklistStateAndStatusFallback(BlacklistStateAndBlacklistStatusChangeCommandDTO dTO, Throwable e) throws IOException {
+        return new GenericResponseDTO<BlacklistStateAndBlacklistStatusChangeCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
