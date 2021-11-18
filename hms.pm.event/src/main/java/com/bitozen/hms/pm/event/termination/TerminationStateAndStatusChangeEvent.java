@@ -21,4 +21,5 @@ public class TerminationStateAndStatusChangeEvent {
     private String tmnID;
     private TerminationState tmnState;
     private TerminationStatus tmnStatus;
+    private Boolean isFinalApprove;
 }

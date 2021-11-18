@@ -234,6 +234,7 @@ public class TerminationHystrixCommandService {
                     dto.getTmnID().toUpperCase(),
                     dto.getTmnState(),
                     dto.getTmnStatus(),
+                    dto.getIsFinalApprove(),
                     dto.getUpdatedBy() == null ? "SYSTEM" : dto.getUpdatedBy(),
                     dto.getUpdatedDate() == null ? new Date() : dto.getUpdatedDate());
 

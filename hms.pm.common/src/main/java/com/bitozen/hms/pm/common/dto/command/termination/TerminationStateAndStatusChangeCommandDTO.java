@@ -22,6 +22,7 @@ public class TerminationStateAndStatusChangeCommandDTO implements Serializable{
     private String tmnID;
     private TerminationState tmnState;
     private TerminationStatus tmnStatus;
+    private Boolean isFinalApprove;
     
     private String updatedBy;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "GMT+7")
