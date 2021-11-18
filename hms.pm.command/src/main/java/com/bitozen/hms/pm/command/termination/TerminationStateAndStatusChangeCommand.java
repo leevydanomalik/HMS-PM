@@ -16,6 +16,7 @@ public class TerminationStateAndStatusChangeCommand {
     private String tmnID;
     private TerminationState tmnState;
     private TerminationStatus tmnStatus;
+    private Boolean isFinalApprove;
     
     private String updatedBy;
     private Date updatedDate;
