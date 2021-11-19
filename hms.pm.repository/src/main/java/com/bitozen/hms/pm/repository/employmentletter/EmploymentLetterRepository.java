@@ -23,6 +23,8 @@ public interface EmploymentLetterRepository extends MongoRepository<EmploymentLe
 
     Optional<EmploymentLetterEntryProjection> findOneByElIDAndElStatusNot(String elID, EmploymentLetterStatus elStatus);
 
+    Optional<EmploymentLetterEntryProjection> findOneByElDocNumberAndElStatusNot(String elDocNumber, EmploymentLetterStatus elStatus);
+
     @Query(value = "{$and: [{$or: [{ 'elID' : {$regex: ?0,$options: 'i'}},"
             + "{'elDocNumber' : {$regex: ?0,$options: 'i'}}]},"          
             + "{'metadata.es.esID' : {$in : ?1}},"

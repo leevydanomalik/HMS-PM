@@ -66,6 +66,24 @@ public class EmploymentLetterQueryController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     
+    @RequestMapping(value = "/query/get.employment.letter.by.doc.number/{elDocNumber}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GenericResponseDTO<EmploymentLetterDTO>> getEmploymentLetterByElDocNumber(@PathVariable("elDocNumber") String elDocNumber) {
+        try {
+            log.info(objectMapper.writeValueAsString(
+                    LogOpsUtil.getLogOps(ProjectType.CQRS, "Employment Letter", EmploymentLetterQueryController.class.getName(),
+                            httpRequest.getRequestURL().toString(),
+                            new Date(), "Query", "getEmploymentLetterByID",
+                            "SYSTEM",
+                            elDocNumber)));
+        } catch (JsonProcessingException ex) {
+            log.info(ex.getMessage());
+        }
+        GenericResponseDTO<EmploymentLetterDTO> response = service.getEmploymentLetterByElDocNumber(elDocNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    
     @RequestMapping(value = "/query/get.employment.letter.for.web",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)

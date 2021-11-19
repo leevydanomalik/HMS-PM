@@ -7,6 +7,7 @@ import com.bitozen.hms.projection.employmentletter.EmploymentLetterEntryProjecti
 import com.bitozen.hms.web.assembler.EmploymentLetterDTOAssembler;
 import com.bitozen.hms.web.handler.employmentletter.query.CountAllEmploymentLetterForWebQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.GetAllEmploymentLetterForWebQuery;
+import com.bitozen.hms.web.handler.employmentletter.query.GetEmploymentLetterByElDocNumberQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.GetEmploymentLetterByIDQuery;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,15 @@ public class EmploymentLetterQueryHandler {
     @QueryHandler
     public EmploymentLetterDTO getEmploymentLetterByID(GetEmploymentLetterByIDQuery query){
         Optional<EmploymentLetterEntryProjection> result = repository.findOneByElIDAndElStatusNot(query.getElID(), EmploymentLetterStatus.INACTIVE);
+        if (result.isPresent()){
+            return assembler.toDTO(result.get());
+        }
+        return null;
+    }
+    
+    @QueryHandler
+    public EmploymentLetterDTO getEmploymentLetterByElDocNumber(GetEmploymentLetterByElDocNumberQuery query){
+        Optional<EmploymentLetterEntryProjection> result = repository.findOneByElDocNumberAndElStatusNot(query.getElDocNumber(), EmploymentLetterStatus.INACTIVE);
         if (result.isPresent()){
             return assembler.toDTO(result.get());
         }
