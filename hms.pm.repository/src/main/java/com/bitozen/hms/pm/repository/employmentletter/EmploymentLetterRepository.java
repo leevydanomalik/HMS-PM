@@ -36,5 +36,17 @@ public interface EmploymentLetterRepository extends MongoRepository<EmploymentLe
             + "{'metadata.es.esID' : {$in : ?1}},"
             + "{'elStatus' : {$ne:?2}}]}", count = true)
     long countAllForWeb(String param, List<String> esIDs, String elStatus);
+    
+    @Query(value = "{$and: [{$or: [{ 'elID' : {$regex: ?0,$options: 'i'}},"
+            + " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]},"
+            + "{'elStatus' : {$ne:'INACTIVE'}},"
+            + "{'requestor.empID': {$regex: ?1,$options: 'i'}}]}")
+    Page<EmploymentLetterEntryProjection> findAllByESSAndParamSearch(String param, String empID, Pageable pageable);
+    
+    @Query(value = "{$and: [{$or: [{ 'elID' : {$regex: ?0,$options: 'i'}},"
+            + " {'metadata.es.esID' : {$regex: ?0,$options: 'i'}}]},"
+            + "{'elStatus' : {$ne:'INACTIVE'}},"
+            + "{'requestor.empID': {$regex: ?1,$options: 'i'}}]}", count = true)
+    long countAllForWebESS(String param, String empID);
 
 }

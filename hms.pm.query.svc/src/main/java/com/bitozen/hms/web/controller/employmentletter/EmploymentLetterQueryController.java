@@ -102,4 +102,21 @@ public class EmploymentLetterQueryController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     
+    @RequestMapping(value = "/query/get.skk.for.web.ess",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GenericResponseDTO<Map<String, Object>>> getAllEmploymentLetterForWebESS(@RequestBody GetListRequestDTO dto) {
+        try {
+            log.info(objectMapper.writeValueAsString(
+                    LogOpsUtil.getLogOps(ProjectType.CQRS, "EmploymentLetter", EmploymentLetterQueryController.class.getName(),
+                            httpRequest.getRequestURL().toString(),
+                            new Date(), "Query", "getAllEmploymentLetterForWebESS",
+                            "SYSTEM",
+                            dto)));
+        } catch (JsonProcessingException ex) {
+            log.info(ex.getMessage());
+        }
+        GenericResponseDTO<Map<String, Object>> response = service.getEmploymentLetterForWebESS(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
