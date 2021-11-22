@@ -5,8 +5,11 @@ import com.bitozen.hms.common.dto.GetListRequestDTO;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.common.dto.query.employmentletter.EmploymentLetterDTO;
+import com.bitozen.hms.web.handler.employmentletter.query.CountAllEmploymentLetterForWebESSQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.CountAllEmploymentLetterForWebQuery;
+import com.bitozen.hms.web.handler.employmentletter.query.GetAllEmploymentLetterForWebESSQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.GetAllEmploymentLetterForWebQuery;
+import com.bitozen.hms.web.handler.employmentletter.query.GetEmploymentLetterByElDocNumberQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.GetEmploymentLetterByIDQuery;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -71,6 +74,35 @@ public class EmploymentLetterHystrixQueryService {
     }
     
     @SneakyThrows
+    @HystrixCommand(fallbackMethod = "defaultGetElByDocNumberFallback")
+    @Cacheable(value = "findOneByElDocNumberCache", key = "#p0")
+    public GenericResponseDTO<EmploymentLetterDTO> getEmploymentLetterByElDocNumber(String elDocNumber) {
+        try {
+            CompletableFuture<EmploymentLetterDTO> result = gateway.query(new GetEmploymentLetterByElDocNumberQuery(elDocNumber), EmploymentLetterDTO.class);
+            if(result.get() == null) {
+                log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(LogOpsUtil.getLogResponse(
+                        ProjectType.CQRS, "Employment Letter", new Date(), "Query", new GenericResponseDTO().noDataFoundResponse().getCode(),
+                        new GenericResponseDTO().noDataFoundResponse().getMessage())));
+                return new GenericResponseDTO().noDataFoundResponse();
+            }
+            log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(LogOpsUtil.getLogResponse(
+                    ProjectType.CQRS, "Employment Letter", new Date(), "Query", new GenericResponseDTO().successResponse().getCode(),
+                    new GenericResponseDTO().successResponse().getMessage())));
+            return new GenericResponseDTO().successResponse(result.get());
+        } catch (Exception e) {
+            log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+                    LogOpsUtil.getErrorResponse(ProjectType.CQRS, "Employment Letter", new Date(), "Query", String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getStackTrace())));
+            return new GenericResponseDTO().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getLocalizedMessage());
+        }
+    }
+
+    public GenericResponseDTO<EmploymentLetterDTO> defaultGetElByDocNumberFallback(String elDocNumber, Throwable e) throws IOException {
+        return new GenericResponseDTO<EmploymentLetterDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
+    
+    @SneakyThrows
     @HystrixCommand(fallbackMethod = "defaultGetAllElWebFallback")
     @Cacheable(value = "getAllElWebCache", key = "#p0")
     public GenericResponseDTO<Map<String, Object>> getEmploymentLetterForWeb(GetListRequestDTO dto) {
@@ -103,4 +135,36 @@ public class EmploymentLetterHystrixQueryService {
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
     
+    @SneakyThrows
+    @HystrixCommand(fallbackMethod = "defaultGetAllEmploymentLetterWebESSFallback")
+    @Cacheable(value = "getAllEmploymentLetterWebESSCache", key = "#p0")
+    public GenericResponseDTO<Map<String, Object>> getEmploymentLetterForWebESS(GetListRequestDTO dto) {
+        try {
+            CompletableFuture<List<EmploymentLetterDTO>> result = gateway.query(new GetAllEmploymentLetterForWebESSQuery(dto), ResponseTypes.multipleInstancesOf(EmploymentLetterDTO.class));
+            if (result.get() == null || result.get().isEmpty()) {
+                log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(LogOpsUtil.getLogResponse(
+                        ProjectType.CQRS, "EmploymentLetter", new Date(), "Query", new GenericResponseDTO().noDataFoundResponse().getCode(),
+                        new GenericResponseDTO().noDataFoundResponse().getMessage())));
+                return new GenericResponseDTO().noDataFoundResponse();
+            }
+            log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(LogOpsUtil.getLogResponse(
+                    ProjectType.CQRS, "EmploymentLetter", new Date(), "Query", new GenericResponseDTO().successResponse().getCode(),
+                    new GenericResponseDTO().successResponse().getMessage())));
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("datas", result.get());
+            CompletableFuture<Integer> count = gateway.query(new CountAllEmploymentLetterForWebESSQuery(dto), Integer.class);
+            resp.put("totalData", count.get());
+            return new GenericResponseDTO().successResponse(resp);
+        } catch (Exception e) {
+            log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+                    LogOpsUtil.getErrorResponse(ProjectType.CQRS, "EmploymentLetter", new Date(), "Query", String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getStackTrace())));
+            return new GenericResponseDTO().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()), e.getLocalizedMessage());
+        }
+    }
+
+    public GenericResponseDTO<Map<String, Object>> defaultGetAllEmploymentLetterWebESSFallback(GetListRequestDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<Map<String, Object>>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
 }

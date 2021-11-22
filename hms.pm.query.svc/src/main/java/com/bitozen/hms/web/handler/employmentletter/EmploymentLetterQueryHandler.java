@@ -5,8 +5,11 @@ import com.bitozen.hms.pm.common.dto.query.employmentletter.EmploymentLetterDTO;
 import com.bitozen.hms.pm.repository.employmentletter.EmploymentLetterRepository;
 import com.bitozen.hms.projection.employmentletter.EmploymentLetterEntryProjection;
 import com.bitozen.hms.web.assembler.EmploymentLetterDTOAssembler;
+import com.bitozen.hms.web.handler.employmentletter.query.CountAllEmploymentLetterForWebESSQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.CountAllEmploymentLetterForWebQuery;
+import com.bitozen.hms.web.handler.employmentletter.query.GetAllEmploymentLetterForWebESSQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.GetAllEmploymentLetterForWebQuery;
+import com.bitozen.hms.web.handler.employmentletter.query.GetEmploymentLetterByElDocNumberQuery;
 import com.bitozen.hms.web.handler.employmentletter.query.GetEmploymentLetterByIDQuery;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +43,15 @@ public class EmploymentLetterQueryHandler {
         }
         return null;
     }
+    
+    @QueryHandler
+    public EmploymentLetterDTO getEmploymentLetterByElDocNumber(GetEmploymentLetterByElDocNumberQuery query){
+        Optional<EmploymentLetterEntryProjection> result = repository.findOneByElDocNumberAndElStatusNot(query.getElDocNumber(), EmploymentLetterStatus.INACTIVE);
+        if (result.isPresent()){
+            return assembler.toDTO(result.get());
+        }
+        return null;
+    }
 
     @QueryHandler
     public List<EmploymentLetterDTO> getAllEmploymentLetterForWeb(GetAllEmploymentLetterForWebQuery query){
@@ -61,4 +73,23 @@ public class EmploymentLetterQueryHandler {
         return count;
     }
     
+    @QueryHandler
+    public List<EmploymentLetterDTO> getAllEmploymentLetterForWebESS(GetAllEmploymentLetterForWebESSQuery query) {
+        Pageable pageable = PageRequest.of(query.getRequest().getOffset(), query.getRequest().getLimit(), Sort.by("creational.createdDate").descending());
+        String param = String.valueOf(query.getRequest().getParams().get("param"));
+        String empID = String.valueOf(query.getRequest().getParams().get("empID"));
+        Page<EmploymentLetterEntryProjection> results = repository.findAllByESSAndParamSearch(String.valueOf(".*").concat(param).concat(".*"), String.valueOf(".*").concat(empID).concat(".*"), pageable);
+        if (results.hasContent()) {
+            return assembler.toDTOs(results.getContent());
+        }
+        return Collections.EMPTY_LIST;
+    }
+    
+    @QueryHandler
+    public Integer countAllEmploymentLetterForWebESS(CountAllEmploymentLetterForWebESSQuery query) {
+        String param = String.valueOf(query.getRequest().getParams().get("param"));
+        String empID = String.valueOf(query.getRequest().getParams().get("empID"));
+        Integer count = Integer.valueOf(String.valueOf(repository.countAllForWebESS(param, empID)));
+        return count;
+    }
 }

@@ -1,7 +1,7 @@
-package com.bitozen.hms.pm.common.dto.command.termination;
+package com.bitozen.hms.pm.common.dto.command.blacklist;
 
-import com.bitozen.hms.pm.common.TerminationState;
-import com.bitozen.hms.pm.common.TerminationStatus;
+import com.bitozen.hms.pm.common.BlacklistState;
+import com.bitozen.hms.pm.common.BlacklistStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.util.Date;
@@ -14,14 +14,16 @@ import lombok.ToString;
  *
  * @author Dumayangsari
  */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TerminationStateAndStatusChangeCommandDTO implements Serializable{
-    private String tmnID;
-    private TerminationState tmnState;
-    private TerminationStatus tmnStatus;
+public class BlacklistStateAndBlacklistStatusChangeCommandDTO implements Serializable{
+    
+    private String blacklistID;
+    private BlacklistStatus blacklistStatus;
+    private BlacklistState blacklistState;
     private Boolean isFinalApprove;
     
     private String updatedBy;

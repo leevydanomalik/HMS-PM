@@ -140,7 +140,8 @@ public class Termination {
                 command.getUpdatedDate(),
                 command.getTmnID(),
                 command.getTmnState(),
-                command.getTmnStatus()));
+                command.getTmnStatus(),
+                command.getIsFinalApprove()));
     }
     
     @EventSourcingHandler
@@ -220,6 +221,7 @@ public class Termination {
         this.tmnStatus = event.getTmnStatus();
         this.updatedBy = event.getUpdatedBy();
         this.updatedDate = event.getUpdatedDate();
+        this.isFinalApprove = event.getIsFinalApprove();
     }
     
 }

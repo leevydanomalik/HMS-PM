@@ -121,6 +121,7 @@ public class TerminationEventListener {
             Optional<TerminationEntryProjection> data = repository.findOneByTmnIDAndTmnStatusNot(event.getTmnID(), TerminationStatus.INACTIVE);
             data.get().setTmnState(event.getTmnState());
             data.get().setTmnStatus(event.getTmnStatus());
+            data.get().setIsFinalApprove(event.getIsFinalApprove());
             data.get().getCreational().setModifiedBy(event.getUpdatedBy());
             data.get().getCreational().setModifiedDate(event.getUpdatedDate());
             repository.save(data.get());
