@@ -74,7 +74,9 @@ public class EmploymentLetterHystrixCommandService {
     @Caching(
             evict = {
                 @CacheEvict(value = "findOneByElIDCache", allEntries = true),
-                @CacheEvict(value = "getAllElWebCache", allEntries = true)
+                @CacheEvict(value = "findOneByElDocNumberCache", allEntries = true),
+                @CacheEvict(value = "getAllElWebCache", allEntries = true),
+                @CacheEvict(value = "getAllEmploymentLetterWebESSCache", allEntries = true)
 
             }
     )
@@ -140,7 +142,9 @@ public class EmploymentLetterHystrixCommandService {
     @Caching(
             evict = {
                 @CacheEvict(value = "findOneByElIDCache", allEntries = true),
-                @CacheEvict(value = "getAllElWebCache", allEntries = true)
+                @CacheEvict(value = "findOneByElDocNumberCache", allEntries = true),
+                @CacheEvict(value = "getAllElWebCache", allEntries = true),
+                @CacheEvict(value = "getAllEmploymentLetterWebESSCache", allEntries = true)
             }
     )
     public GenericResponseDTO<EmploymentLetterChangeCommandDTO> putEmploymentLetter(EmploymentLetterChangeCommandDTO dto) {
@@ -203,7 +207,9 @@ public class EmploymentLetterHystrixCommandService {
     @Caching(
             evict = {
                 @CacheEvict(value = "findOneByElIDCache", allEntries = true),
-                @CacheEvict(value = "getAllElWebCache", allEntries = true)
+                @CacheEvict(value = "findOneByElDocNumberCache", allEntries = true),
+                @CacheEvict(value = "getAllElWebCache", allEntries = true),
+                @CacheEvict(value = "getAllEmploymentLetterWebESSCache", allEntries = true)
 
             }
     )
@@ -273,7 +279,9 @@ public class EmploymentLetterHystrixCommandService {
     @Caching(
             evict = {
                 @CacheEvict(value = "findOneByElIDCache", allEntries = true),
-                @CacheEvict(value = "getAllElWebCache", allEntries = true)
+                @CacheEvict(value = "findOneByElDocNumberCache", allEntries = true),
+                @CacheEvict(value = "getAllElWebCache", allEntries = true),
+                @CacheEvict(value = "getAllEmploymentLetterWebESSCache", allEntries = true)
             }
     )
     public GenericResponseDTO<EmploymentLetterDeleteCommandDTO> deleteEmploymentLetter(EmploymentLetterDeleteCommandDTO dto) {
