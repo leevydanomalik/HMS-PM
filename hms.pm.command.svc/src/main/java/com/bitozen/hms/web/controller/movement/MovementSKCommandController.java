@@ -3,6 +3,7 @@ package com.bitozen.hms.web.controller.movement;
 import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
+import com.bitozen.hms.pm.common.dto.command.movement.MVSKChangeStateAndStatusCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MVSKCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MVSKDeleteCommandDTO;
 import com.bitozen.hms.web.hystrix.movement.MovementSKHystrixCommandService;
@@ -73,6 +74,25 @@ public class MovementSKCommandController {
             log.info(ex.getMessage());
         }
         GenericResponseDTO<MVSKCreateCommandDTO> response = service.putMovementSK(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    
+    @RequestMapping(value = "/command/put.movement.sk.state.and.status",
+            method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO>> putMovementSKStateAndStatus(@RequestBody MVSKChangeStateAndStatusCommandDTO dto) {
+        try {
+            log.info(objectMapper.writeValueAsString(
+                    LogOpsUtil.getLogOps(ProjectType.CQRS, "Movement", MovementSKCommandController.class.getName(),
+                            httpRequest.getRequestURL().toString(),
+                            new Date(), "Command", "Create",
+                            "SYSTEM",
+                            dto)));
+        } catch (JsonProcessingException ex) {
+            log.info(ex.getMessage());
+        }
+        GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO> response = service.putMovementSKChangeStateAndStatus(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

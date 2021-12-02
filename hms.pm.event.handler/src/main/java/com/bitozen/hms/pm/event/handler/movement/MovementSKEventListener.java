@@ -79,6 +79,35 @@ public class MovementSKEventListener {
             repository.save(movement);
         }
     }
+    
+    @SneakyThrows
+    @EventHandler
+    public void on(MovementSKChangeStateAndStatusEvent event) {
+        Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
+        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
+        MVSKDTO skdata = employee.getSks().get(0);
+        if(data.isPresent()) {
+            MovementEntryProjection movement = data.get();
+            List<MVEmployeeDTO> employees = data.get().getEmployees();
+            employees.stream().forEach(detail -> {
+                if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
+                    List<MVSKDTO> sks = detail.getSks();
+                    sks.stream().forEach(sk -> {
+                        if(sk.getSkID().equalsIgnoreCase(skdata.getSkID())) {
+                            sk.setSkStatus(skdata.getSkStatus());
+                            sk.setSkState(skdata.getSkState());
+                            sk.setIsRevoke(skdata.getIsRevoke());
+                            sk.setIsFinalApprove(skdata.getIsFinalApprove());
+                            sk.setRequestDate(skdata.getRequestDate());
+                        }
+                    });
+                    detail.setSks(sks);
+                }
+            });
+            movement.setEmployees(employees);
+            repository.save(movement);
+        }
+    }
 
     @SneakyThrows
     @EventHandler

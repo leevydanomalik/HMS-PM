@@ -223,6 +223,27 @@ public class MovementAssembler {
         ))));
         return empDTO;
     }
+    
+    public MVEmployeeDTO toSKDTOChangeStateAndStatus(MVSKChangeStateAndStatusCommandDTO dto) {
+        MVEmployeeDTO empDTO = new MVEmployeeDTO();
+        empDTO.setMvDetailID(dto.getMvDetailID());
+        empDTO.setSks(new ArrayList<>(Arrays.asList(
+                new MVSKDTO(
+                        dto.getSkID(),
+                        null,
+                        null,
+                        dto.getSkStatus(),
+                        dto.getSkState(),
+                        null,
+                        null,
+                        dto.getIsRevoke(),
+                        dto.getIsFinalApprove(),
+                        null,
+                        null,
+                        dto.getRequestDate()
+        ))));
+        return empDTO;
+    }
 
     public MVEmployeeDTO toSKDTODeleteRequest(MVSKDeleteCommandDTO dto) {
         MVEmployeeDTO empDTO = new MVEmployeeDTO();

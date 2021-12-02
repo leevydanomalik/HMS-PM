@@ -3,10 +3,7 @@ package com.bitozen.hms.web.controller.movement;
 import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementChangeCommandDTO;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementCreateCommandDTO;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementDeleteCommandDTO;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementStateAndMovementStatusChangeCommandDTO;
+import com.bitozen.hms.pm.common.dto.command.movement.*;
 import com.bitozen.hms.web.hystrix.movement.MovementHystrixCommandService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,6 +72,25 @@ public class MovementCommandController {
             log.info(ex.getMessage());
         }
         GenericResponseDTO<MovementChangeCommandDTO> response = service.putMovement(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @RequestMapping(value = "/command/put.movement.detail",
+            method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GenericResponseDTO<MovementChangeDetailCommandDTO>> putMovementDetail(@RequestBody MovementChangeDetailCommandDTO dto) {
+        try {
+            log.info(objectMapper.writeValueAsString(
+                    LogOpsUtil.getLogOps(ProjectType.CQRS, "Movement", MovementCommandController.class.getName(),
+                            httpRequest.getRequestURL().toString(),
+                            new Date(), "Command", "Update",
+                            dto.getUpdatedBy(),
+                            dto)));
+        } catch (JsonProcessingException ex) {
+            log.info(ex.getMessage());
+        }
+        GenericResponseDTO<MovementChangeDetailCommandDTO> response = service.putMovementDetail(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

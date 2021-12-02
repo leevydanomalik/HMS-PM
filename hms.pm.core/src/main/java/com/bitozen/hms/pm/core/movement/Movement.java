@@ -123,6 +123,16 @@ public class Movement {
     }
 
     @CommandHandler
+    public void handle(MovementChangeDetailCommand command){
+        AggregateLifecycle.apply(new MovementChangeDetailEvent(
+                command.getMvID(),
+                command.getEmployees(),
+                command.getUpdatedBy(),
+                command.getUpdatedDate()
+        ));
+    }
+
+    @CommandHandler
     public void handle(MovementDeleteCommand command) {
         AggregateLifecycle.apply(new MovementDeleteEvent(
                 command.getMvID(),
@@ -141,6 +151,14 @@ public class Movement {
     @CommandHandler
     public void handle(MovementSKChangeCommand command) {
         AggregateLifecycle.apply(new MovementSKChangeEvent(
+                command.getMvID(),
+                command.getEmployees()
+        ));
+    }
+    
+    @CommandHandler
+    public void handle(MovementSKChangeStateAndStatusCommand command) {
+        AggregateLifecycle.apply(new MovementSKChangeStateAndStatusEvent(
                 command.getMvID(),
                 command.getEmployees()
         ));
@@ -244,6 +262,16 @@ public class Movement {
         this.updatedBy = event.getUpdatedBy();
         this.updatedDate = event.getUpdatedDate();
     }
+    
+    
+
+    @EventSourcingHandler
+    public void on(MovementChangeDetailEvent event){
+        this.mvID = event.getMvID();
+        this.employees = event.getEmployees();
+        this.updatedBy = event.getUpdatedBy();
+        this.updatedDate = event.getUpdatedDate();
+    }
 
     @EventSourcingHandler
     public void on(MovementDeleteEvent event) {
@@ -259,6 +287,12 @@ public class Movement {
 
     @EventSourcingHandler
     public void on(MovementSKChangeEvent event) {
+        this.mvID = event.getMvID();
+        this.employees = event.getEmployees();
+    }
+    
+    @EventSourcingHandler
+    public void on(MovementSKChangeStateAndStatusEvent event) {
         this.mvID = event.getMvID();
         this.employees = event.getEmployees();
     }
