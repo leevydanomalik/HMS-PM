@@ -246,7 +246,7 @@ public class MovementHystrixCommandService {
         return response;
     }
 
-    private GenericResponseDTO<MovementChangeDetailCommandDTO> defaultPutMovementDetailFallback(MovementChangeCommandDTO dto, Throwable e) throws IOException {
+    private GenericResponseDTO<MovementChangeDetailCommandDTO> defaultPutMovementDetailFallback(MovementChangeDetailCommandDTO dto, Throwable e) throws IOException {
         return new GenericResponseDTO<MovementChangeDetailCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
