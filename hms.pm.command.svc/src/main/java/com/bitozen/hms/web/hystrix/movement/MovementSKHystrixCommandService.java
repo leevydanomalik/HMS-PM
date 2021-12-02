@@ -197,7 +197,7 @@ public class MovementSKHystrixCommandService {
         return response;
     }
 
-    private GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO> defaultPutMovementSKChangeStateAndStatusFallback(MVSKCreateCommandDTO dto, Throwable e) throws IOException {
+    private GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO> defaultPutMovementSKChangeStateAndStatusFallback(MVSKChangeStateAndStatusCommandDTO dto, Throwable e) throws IOException {
         return new GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
