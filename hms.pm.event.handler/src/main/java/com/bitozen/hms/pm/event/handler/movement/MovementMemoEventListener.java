@@ -34,12 +34,12 @@ public class MovementMemoEventListener {
     @EventHandler
     public void on(MovementMemoCreateEvent event) {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
-        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
-        if(data.isPresent()) {
+        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(), MVEmployeeDTO.class);
+        if (data.isPresent()) {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
-                if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
+                if (detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
                     detail.getMemos().addAll(employee.getMemos());
                 }
             });
@@ -52,16 +52,16 @@ public class MovementMemoEventListener {
     @EventHandler
     public void on(MovementMemoChangeEvent event) {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
-        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
+        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(), MVEmployeeDTO.class);
         MVMemoDTO memoData = employee.getMemos().get(0);
-        if(data.isPresent()) {
+        if (data.isPresent()) {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
-                if(detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
+                if (detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
                     List<MVMemoDTO> memos = detail.getMemos();
                     memos.stream().forEach(memo -> {
-                        if(memo.getMemoID().equalsIgnoreCase(memoData.getMemoID())) {
+                        if (memo.getMemoID().equalsIgnoreCase(memoData.getMemoID())) {
                             memo.setMemoRefID(memoData.getMemoRefID());
                             memo.setMemoDocNumber(memoData.getMemoDocNumber());
                             memo.setIsRevoke(memoData.getIsRevoke());
@@ -85,20 +85,52 @@ public class MovementMemoEventListener {
     @EventHandler
     public void on(MovementMemoDeleteEvent event) {
         Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
-        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(),MVEmployeeDTO.class);
+        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(), MVEmployeeDTO.class);
         MVMemoDTO memoData = employee.getMemos().get(0);
         Predicate<MVMemoDTO> target = item -> item.getMemoID().equalsIgnoreCase(memoData.getMemoID());
-        if(data.isPresent()) {
+        if (data.isPresent()) {
             MovementEntryProjection movement = data.get();
             List<MVEmployeeDTO> employees = data.get().getEmployees();
             employees.stream().forEach(detail -> {
-                    List<MVMemoDTO> memos = detail.getMemos();
-                    memos.stream().filter(target).forEach(memo -> memo.getMemoID());
-                    memos.removeIf(target);
-                    detail.setMemos(memos);
+                List<MVMemoDTO> memos = detail.getMemos();
+                memos.stream().filter(target).forEach(memo -> memo.getMemoID());
+                memos.removeIf(target);
+                detail.setMemos(memos);
             });
             movement.setEmployees(employees);
             repository.save(movement);
         }
     }
+
+    @SneakyThrows
+    @EventHandler
+    public void on(MovementMemoChangeStateAndStatusEvent event) {
+        Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
+        MVEmployeeDTO employee = mapper.readValue(event.getEmployees(), MVEmployeeDTO.class);
+        MVMemoDTO memoData = employee.getMemos().get(0);
+        if (data.isPresent()) {
+            MovementEntryProjection movement = data.get();
+            List<MVEmployeeDTO> employees = data.get().getEmployees();
+            employees.stream().forEach(detail -> {
+                if (detail.getMvDetailID().equalsIgnoreCase(employee.getMvDetailID())) {
+                    List<MVMemoDTO> memos = detail.getMemos();
+                    memos.stream().forEach(memo -> {
+                        if (memo.getMemoID().equalsIgnoreCase(memoData.getMemoID())) {
+                            memo.setMemoDocNumber(memoData.getMemoDocNumber());
+                            memo.setIsFinalApprove(memoData.getIsFinalApprove());
+                            memo.setMemoStatus(memoData.getMemoStatus());
+                            memo.setMemoState(memoData.getMemoState());
+                            memo.setMemoType(memoData.getMemoType());
+                            memo.setRequestor(memoData.getRequestor());
+                            memo.setRequestDate(memoData.getRequestDate());
+                        }
+                    });
+                    detail.setMemos(memos);
+                }
+            });
+            movement.setEmployees(employees);
+            repository.save(movement);
+        }
+    }
+
 }

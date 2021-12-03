@@ -301,4 +301,25 @@ public class MovementAssembler {
                 ))));
         return empDTO;
     }
+    
+    public MVEmployeeDTO toMemoDTOUpdateStateAndStatusRequest(MVMemoChangeStateAndStatusCommandDTO dto) {
+        MVEmployeeDTO empDTO = new MVEmployeeDTO();
+        empDTO.setMvDetailID(dto.getMvDetailID());
+        empDTO.setMemos(new ArrayList<>(Arrays.asList((toMemo(dto)))));
+        return empDTO;
+    }
+
+    public MVMemoDTO toMemo(MVMemoChangeStateAndStatusCommandDTO dto) {
+        MVMemoDTO mv = new MVMemoDTO();
+        mv.setMemoID(dto.getMemoID());
+        mv.setMemoDocNumber(dto.getMemoDocNumber());
+        mv.setIsFinalApprove(dto.getIsFinalApprove());
+        mv.setMemoStatus(dto.getMemoStatus());
+        mv.setMemoState(dto.getMemoState());
+        mv.setMemoType(bizHelper.convertBizpar(dto.getMemoType()));
+        mv.setRequestor(empHelper.findEmployeeOptimizeByKey(dto.getRequestor()));
+        mv.setRequestDate(dto.getRequestDate());
+        return mv;
+    }
+    
 }

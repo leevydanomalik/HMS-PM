@@ -195,6 +195,14 @@ public class Movement {
                 command.getEmployees()
         ));
     }
+    
+    @CommandHandler
+    public void handle(MovementMemoChangeStateAndStatusCommand command) {
+        AggregateLifecycle.apply(new MovementMemoChangeStateAndStatusEvent(
+                command.getMvID(),
+                command.getEmployees()
+        ));
+    }
 
     @EventSourcingHandler
     public void on(MovementCreateEvent event) {
@@ -320,4 +328,11 @@ public class Movement {
         this.mvID = event.getMvID();
         this.employees = event.getEmployees();
     }
+    
+    @EventSourcingHandler
+    public void on(MovementMemoChangeStateAndStatusEvent event) {
+        this.mvID = event.getMvID();
+        this.employees = event.getEmployees();
+    }
+    
 }

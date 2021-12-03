@@ -6,6 +6,7 @@ import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.command.movement.*;
 import com.bitozen.hms.pm.common.MVStatus;
+import com.bitozen.hms.pm.common.dto.command.movement.MVMemoChangeStateAndStatusCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MVMemoCreateCommandDTO;
 import com.bitozen.hms.pm.common.dto.command.movement.MVMemoDeleteCommandDTO;
 import com.bitozen.hms.pm.repository.movement.MovementRepository;
@@ -212,4 +213,55 @@ public class MovementMemoHystrixCommandService {
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
+    
+    @HystrixCommand(fallbackMethod = "defaultPutMovementMemoStateAndStatusFallback")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findOneByMovementIDCache", allEntries = true),
+                    @CacheEvict(value = "getAllMovementWebCache", allEntries = true)
+            }
+    )
+    public GenericResponseDTO<MVMemoChangeStateAndStatusCommandDTO> putMovementMemoStateAndStatus(MVMemoChangeStateAndStatusCommandDTO dto) {
+        GenericResponseDTO<MVMemoChangeStateAndStatusCommandDTO> response = new GenericResponseDTO().successResponse();
+        try {
+            MovementMemoChangeStateAndStatusCommand command = new MovementMemoChangeStateAndStatusCommand(
+                    dto.getMvID(),
+                    objectMapper.writeValueAsString(movAssembler.toMemoDTOUpdateStateAndStatusRequest(dto))
+            );
+            commandGateway.send(command, new CommandCallback<MovementMemoChangeStateAndStatusCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends MovementMemoChangeStateAndStatusCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    if (commandResultMessage.isExceptional() == false) {
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                    new GenericResponseDTO().successResponse().getMessage())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    } else {
+                        response.setStatus(ResponseStatus.F);
+                        response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                        response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    }
+                }
+            });
+        } catch(Exception e) {
+            log.info(e.getMessage());
+        }
+        return response;
+    }
+
+    private GenericResponseDTO<MVMemoChangeStateAndStatusCommandDTO> defaultPutMovementMemoStateAndStatusFallback(MVMemoChangeStateAndStatusCommandDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<MVMemoChangeStateAndStatusCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
+    
 }
