@@ -8,10 +8,7 @@ import com.bitozen.hms.common.dto.share.DocumentDTO;
 import com.bitozen.hms.common.dto.share.EmployeeOptimizeDTO;
 import com.bitozen.hms.pm.common.MVStatus;
 import com.bitozen.hms.pm.common.dto.query.movement.*;
-import com.bitozen.hms.pm.event.movement.MovementChangeEvent;
-import com.bitozen.hms.pm.event.movement.MovementChangeStateAndStatusEvent;
-import com.bitozen.hms.pm.event.movement.MovementCreateEvent;
-import com.bitozen.hms.pm.event.movement.MovementDeleteEvent;
+import com.bitozen.hms.pm.event.movement.*;
 import com.bitozen.hms.pm.repository.movement.MovementRepository;
 import com.bitozen.hms.projection.movement.MovementEntryProjection;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -59,7 +56,7 @@ public class MovementEventListener {
                 mapper.readValue(event.getMvFacilityAfter(), MVFacilityDTO.class),
                 mapper.readValue(event.getMvPayroll(), MVPayrollDTO.class),
                 mapper.readValue(event.getMvPosition(), MVPositionDTO.class),
-                mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class),
+                event.getRefRecRequest() == null ? null : mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class),
                 mapper.readValue(event.getMetadata(), MetadataDTO.class),
                 mapper.readValue(event.getToken(), GenericAccessTokenDTO.class),
                 new CreationalSpecificationDTO(event.getCreatedBy(),
@@ -92,9 +89,19 @@ public class MovementEventListener {
         data.get().setMvFacilityAfter(mapper.readValue(event.getMvFacilityAfter(), MVFacilityDTO.class));
         data.get().setMvPayroll(mapper.readValue(event.getMvPayroll(), MVPayrollDTO.class));
         data.get().setMvPosition(mapper.readValue(event.getMvPosition(), MVPositionDTO.class));
-        data.get().setRefRecRequest(mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class));
+        data.get().setRefRecRequest( event.getRefRecRequest() == null ? null : mapper.readValue(event.getRefRecRequest(), RecRequestRefDTO.class));
         data.get().setMetadata(mapper.readValue(event.getMetadata(), MetadataDTO.class));
         data.get().setToken(mapper.readValue(event.getToken(), GenericAccessTokenDTO.class));
+        data.get().getCreational().setModifiedBy(event.getUpdatedBy());
+        data.get().getCreational().setModifiedDate(event.getUpdatedDate());
+        repository.save(data.get());
+    }
+
+    @SneakyThrows
+    @EventHandler
+    public void on(MovementChangeDetailEvent event) {
+        Optional<MovementEntryProjection> data = repository.findOneByMvIDAndMvStatusNot(event.getMvID(), MVStatus.INACTIVE);
+        data.get().setEmployees(mapper.readValue(event.getEmployees(), new TypeReference<List<MVEmployeeDTO>>() {}));
         data.get().getCreational().setModifiedBy(event.getUpdatedBy());
         data.get().getCreational().setModifiedDate(event.getUpdatedDate());
         repository.save(data.get());

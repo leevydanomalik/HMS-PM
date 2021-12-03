@@ -4,14 +4,8 @@ import com.bitozen.hms.common.dto.GenericResponseDTO;
 import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
-import com.bitozen.hms.pm.command.movement.MovementChangeCommand;
-import com.bitozen.hms.pm.command.movement.MovementChangeStateAndStatusCommand;
-import com.bitozen.hms.pm.command.movement.MovementCreateCommand;
-import com.bitozen.hms.pm.command.movement.MovementDeleteCommand;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementChangeCommandDTO;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementCreateCommandDTO;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementDeleteCommandDTO;
-import com.bitozen.hms.pm.common.dto.command.movement.MovementStateAndMovementStatusChangeCommandDTO;
+import com.bitozen.hms.pm.command.movement.*;
+import com.bitozen.hms.pm.common.dto.command.movement.*;
 import com.bitozen.hms.web.assembler.MovementAssembler;
 import com.bitozen.hms.web.helper.PMAssembler;
 import com.bitozen.hms.web.helper.BizparHelper;
@@ -91,7 +85,7 @@ public class MovementHystrixCommandService {
                     objectMapper.writeValueAsString(movAssembler.toFacilityDTO(dto.getMvFacilityAfter())),
                     objectMapper.writeValueAsString(dto.getMvPayroll()),
                     objectMapper.writeValueAsString(movAssembler.toPositionDTO(dto.getMvPosition())),
-                    objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
+                    dto.getRefRecRequest() == null ? null : objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
                     objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getCreatedBy(),
@@ -164,7 +158,7 @@ public class MovementHystrixCommandService {
                     objectMapper.writeValueAsString(movAssembler.toFacilityDTO(dto.getMvFacilityAfter())),
                     objectMapper.writeValueAsString(dto.getMvPayroll()),
                     objectMapper.writeValueAsString(movAssembler.toPositionDTO(dto.getMvPosition())),
-                    objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
+                    dto.getRefRecRequest() == null ? null : objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
                     objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getUpdatedBy(),
@@ -202,6 +196,58 @@ public class MovementHystrixCommandService {
 
     private GenericResponseDTO<MovementChangeCommandDTO> defaultPutMovementFallback(MovementChangeCommandDTO dto, Throwable e) throws IOException {
         return new GenericResponseDTO<MovementChangeCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
+
+    @HystrixCommand(fallbackMethod = "defaultPutMovementDetailFallback")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findOneByMovementIDCache", allEntries = true),
+                    @CacheEvict(value = "getAllMovementWebCache", allEntries = true)
+            }
+    )
+    public GenericResponseDTO<MovementChangeDetailCommandDTO> putMovementDetail(MovementChangeDetailCommandDTO dto) {
+        GenericResponseDTO<MovementChangeDetailCommandDTO> response = new GenericResponseDTO().successResponse();
+        try {
+            MovementChangeDetailCommand command = new MovementChangeDetailCommand(
+                    dto.getMvID(),
+                    objectMapper.writeValueAsString(movAssembler.toMVEmployeeDTOs(dto.getEmployees())),
+                    dto.getUpdatedBy(),
+                    dto.getUpdatedDate()
+            );
+            commandGateway.send(command, new CommandCallback<MovementChangeDetailCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends MovementChangeDetailCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    if (commandResultMessage.isExceptional() == false) {
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                    new GenericResponseDTO().successResponse().getMessage())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    } else {
+                        response.setStatus(ResponseStatus.F);
+                        response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                        response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    }
+                }
+            });
+        } catch(Exception e) {
+            log.info(e.getMessage());
+        }
+        return response;
+    }
+
+    private GenericResponseDTO<MovementChangeDetailCommandDTO> defaultPutMovementDetailFallback(MovementChangeDetailCommandDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<MovementChangeDetailCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }

@@ -5,6 +5,7 @@ import com.bitozen.hms.common.status.ResponseStatus;
 import com.bitozen.hms.common.type.ProjectType;
 import com.bitozen.hms.common.util.LogOpsUtil;
 import com.bitozen.hms.pm.command.movement.MovementSKChangeCommand;
+import com.bitozen.hms.pm.command.movement.MovementSKChangeStateAndStatusCommand;
 import com.bitozen.hms.pm.command.movement.MovementSKCreateCommand;
 import com.bitozen.hms.pm.command.movement.MovementSKDeleteCommand;
 import com.bitozen.hms.pm.common.MVStatus;
@@ -148,6 +149,56 @@ public class MovementSKHystrixCommandService {
 
     private GenericResponseDTO<MVSKCreateCommandDTO> defaultPutMovementSKFallback(MVSKCreateCommandDTO dto, Throwable e) throws IOException {
         return new GenericResponseDTO<MVSKCreateCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
+                        : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
+    }
+    
+    @HystrixCommand(fallbackMethod = "defaultPutMovementSKChangeStateAndStatusFallback")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "findOneByMovementIDCache", allEntries = true),
+                    @CacheEvict(value = "getAllMovementWebCache", allEntries = true)
+            }
+    )
+    public GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO> putMovementSKChangeStateAndStatus(MVSKChangeStateAndStatusCommandDTO dto) {
+        GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO> response = new GenericResponseDTO().successResponse();
+        try {
+            MovementSKChangeStateAndStatusCommand command = new MovementSKChangeStateAndStatusCommand(
+                    dto.getMvID(),
+                    objectMapper.writeValueAsString(movAssembler.toSKDTOChangeStateAndStatus(dto))
+            );
+            commandGateway.send(command, new CommandCallback<MovementSKChangeStateAndStatusCommand, Object>() {
+                @Override
+                public void onResult(CommandMessage<? extends MovementSKChangeStateAndStatusCommand> commandMessage, CommandResultMessage<?> commandResultMessage) {
+                    if (commandResultMessage.isExceptional() == false) {
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getLogResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", new GenericResponseDTO().successResponse().getCode(),
+                                    new GenericResponseDTO().successResponse().getMessage())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    } else {
+                        response.setStatus(ResponseStatus.F);
+                        response.setCode(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                        response.setMessage(commandResultMessage.exceptionResult().getLocalizedMessage());
+                        try {
+                            log.info(objectMapper.writeValueAsString(LogOpsUtil.getErrorResponse(
+                                    ProjectType.CQRS, "Movement", new Date(), "Command", response.getCode(), commandResultMessage.exceptionResult().getStackTrace())));
+                        } catch (JsonProcessingException ex) {
+                            log.info(ex.getMessage());
+                        }
+                    }
+                }
+            });
+        } catch(Exception e) {
+            log.info(e.getMessage());
+        }
+        return response;
+    }
+
+    private GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO> defaultPutMovementSKChangeStateAndStatusFallback(MVSKChangeStateAndStatusCommandDTO dto, Throwable e) throws IOException {
+        return new GenericResponseDTO<MVSKChangeStateAndStatusCommandDTO>().errorResponse(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                 e instanceof HystrixTimeoutException ? "Connection Timeout. Please Try Again Later"
                         : e instanceof HystrixBadRequestException ? "Bad Request. Please recheck submitted data" : e.getLocalizedMessage());
     }
