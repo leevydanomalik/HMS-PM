@@ -41,15 +41,15 @@ public class MVSKCreateCommandDTO implements Serializable {
     @JsonIgnore
     public MVSKCreateCommandDTO getInstance() {
         return new MVSKCreateCommandDTO(
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
+                "1637909098351",
+                "1637909132703",
+                "19B930DF",
+                "99DDBF7E",
+                "A3C361E1",
                 MVSKStatus.INITIATE,
                 MVSKState.INITIATE,
-                "KEY001",
-                "EMPNEW666",
+                "MOVSKTYP-006",
+                "1611128134004",
                 Boolean.TRUE,
                 Boolean.TRUE,
                 new ArrayList<>(),

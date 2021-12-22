@@ -35,14 +35,14 @@ public class MVPositionCreateDTO implements Serializable {
         return new MVPositionCreateDTO(
                 new Date(),
                 new Date(),
-                "ES-001",
-                "ES-001",
-                "OU-001",
-                "OU-001",
-                "KEY001",
-                "KEY001",
-                "KEY001",
-                "KEY001"
+                "ES-1604890793920",
+                "ES-1604890793920",
+                "1633571519452",
+                "1633577702157",
+                "LVL-006",
+                "LVL-006",
+                "GRADE-001",
+                "GRADE-001"
         );
     }
 }

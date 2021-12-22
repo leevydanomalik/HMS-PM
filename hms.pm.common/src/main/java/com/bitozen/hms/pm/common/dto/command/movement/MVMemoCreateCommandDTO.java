@@ -38,17 +38,17 @@ public class MVMemoCreateCommandDTO implements Serializable {
     @JsonIgnore
     public MVMemoCreateCommandDTO getInstance() {
         return new MVMemoCreateCommandDTO(
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
+                "1637909098351",
+                "1637909132703",
+                "1638953223569",
+                "1637909098351",
+                "MO/2021/VIABLE/EELS/2022",
                 Boolean.TRUE,
                 Boolean.TRUE,
                 MVMemoStatus.INITIATE,
                 MVMemoState.INITIATE,
-                "KEY001",
-                "EMPNEW666",
+                "MOVMEMOTYP-001",
+                "1611128134009",
                 new Date()
         );
     }

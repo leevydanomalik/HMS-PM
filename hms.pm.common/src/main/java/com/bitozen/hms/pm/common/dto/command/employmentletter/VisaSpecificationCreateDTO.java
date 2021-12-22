@@ -31,7 +31,7 @@ public class VisaSpecificationCreateDTO implements Serializable {
         return new VisaSpecificationCreateDTO(
                 
                 new Date(),
-                "destination",
+                "Rep. Congo",
                 new ArrayList<>()
                 
         );

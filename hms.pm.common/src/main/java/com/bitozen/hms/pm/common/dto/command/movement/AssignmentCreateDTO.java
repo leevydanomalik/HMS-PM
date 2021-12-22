@@ -30,12 +30,12 @@ public class AssignmentCreateDTO implements Serializable {
     @JsonIgnore
     public AssignmentCreateDTO getInstance() {
         return new AssignmentCreateDTO(
-                "ACHIEVEMENT",
+                "CES",
                 new Date(),
                 new Date(),
-                "KEY001",
-                "KEY001",
-                "REaSON OF PROPOSING"
+                "1635845919333",
+                "MOVTYPASS-003",
+                "CES"
         );
     }
 }

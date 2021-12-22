@@ -47,16 +47,16 @@ public class EmploymentLetterCreateCommandDTO implements Serializable {
     @JsonIgnore
     public EmploymentLetterCreateCommandDTO getInstance() {
         return new EmploymentLetterCreateCommandDTO(
-                UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
-                "elDocNumber",
+                "1637654320874",
+                "1234567899",
                 "elDocURL",
                 EmploymentLetterState.EL_INITIATE,
                 EmploymentLetterStatus.INITIATE,
                 Boolean.TRUE,
                 "reason",
                 new Date(),
-                "KEY001",
-                "64BDEEB8",
+                "REQCERTYPE-003",
+                "1611128134009",
                 new VisaSpecificationCreateDTO().getInstance(),
                 new MetadataCreateDTO().getInstance(),
                 new GenericAccessTokenDTO(),
