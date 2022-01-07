@@ -1,0 +1,109 @@
+[
+	{
+		"tmnID": "TM-07",
+		"tmnNotes": "notes",
+		"bpjsHTDocNumber": "no bpjs",
+		"bpjsPensionDocNumber": "no pensiun bpjs",
+		"docCopies": [
+			"doc1",
+			"doc2"
+		],
+		"isCancelFinalApprove": false,
+		"isExecuted": false,
+		"isFinalApprove": false,
+		"memoDocNumber": "memo doc number",
+		"employee": "64BDEEB8",
+		"requestor": "64BDEEB8",
+		"skDocNumber": "sk doc number",
+		"skdtDocNumber": "skdt doc number",
+		"tmnDocs": [
+			{
+				"docID": "0394C8A5",
+				"docName": "doc name",
+				"docType": "KEY001",
+				"docURL": "URL"
+			}
+		],
+		"tmnEffectiveDate": "12-10-2021",
+		"tmnReqDate": "12-10-2021",
+		"tmnPphEndDate": "12-10-2021",
+		"tmnReason": "KEY001",
+		"tmnState": "INITIATE",
+		"tmnStatus": "INITIATE",
+		"bagPensionSpec": {
+			"achievement": "tidur",
+			"proposingReason": "iya",
+			"proposingType": "tipe"
+		},
+		"bagProlongedIllnessSpec":{
+			"plDuration":"KEY001"
+		},
+		"metadata": {
+			"id": "E21EAB62",
+			"es": "ES-001",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": "ihaidhaida",
+			"gsoGuestToken": "jnfsnfsfs"
+		},
+		"createdBy": "SYSTEM",
+		"createdDate": "12-10-2021 17:09:21",
+		"recordID": "177b0ee5-9d24-4450-8db9-4bb491a8eba6"
+	},{
+		"tmnID": "TM-08",
+		"tmnNotes": "notes",
+		"bpjsHTDocNumber": "no bpjs",
+		"bpjsPensionDocNumber": "no pensiun bpjs",
+		"docCopies": [
+			"doc1",
+			"doc2"
+		],
+		"isCancelFinalApprove": false,
+		"isExecuted": false,
+		"isFinalApprove": false,
+		"memoDocNumber": "memo doc number",
+		"employee": "64BDEEB8",
+		"requestor": "64BDEEB8",
+		"skDocNumber": "sk doc number",
+		"skdtDocNumber": "skdt doc number",
+		"tmnDocs": [
+			{
+				"docID": "0394C8A5",
+				"docName": "doc name",
+				"docType": "KEY001",
+				"docURL": "URL"
+			}
+		],
+		"tmnEffectiveDate": "12-10-2021",
+		"tmnReqDate": "12-10-2021",
+		"tmnPphEndDate": "12-10-2021",
+		"tmnReason": "KEY001",
+		"tmnState": "INITIATE",
+		"tmnStatus": "INITIATE",
+		"bagPensionSpec": {
+			"achievement": "tidur",
+			"proposingReason": "iya",
+			"proposingType": "tipe"
+		},
+		"bagProlongedIllnessSpec":{
+			"plDuration":"KEY001"
+		},
+		"metadata": {
+			"id": "E21EAB62",
+			"es": "ES-001",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": "ihaidhaida",
+			"gsoGuestToken": "jnfsnfsfs"
+		},
+		"createdBy": "SYSTEM",
+		"createdDate": "12-10-2021 17:09:21",
+		"recordID": "177b0ee5-9d24-4450-8db9-4bb491a8eba6"
+	}
+]

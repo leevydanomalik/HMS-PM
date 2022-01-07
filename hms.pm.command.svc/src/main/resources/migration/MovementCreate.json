@@ -1,0 +1,319 @@
+[	
+	{
+		"mvID": "MV-009",
+		"mvNotes": "NOTES",
+		"mvSPKDocNumber": "14-10-2021",
+		"mvEffectiveDate": "14-10-2021",
+		"isFinalApprove": true,
+		"mvStatus": "INITIATE",
+		"mvState": "MV_INITIATE",
+		"mvCase": "KEY001",
+		"mvType": "KEY001",
+		"requestor": "64BDEEB8",
+		"assignment": {
+			"achievement": "ACHIEVEMENT",
+			"assignmentStartDate": "14-10-2021",
+			"assignmentEndDate": "14-10-2021",
+			"assignmentPlace": "ES-001",
+			"assignmentType": "KEY001",
+			"reasonOfProposing": "REaSON OF PROPOSING"
+		},
+		"employees": [
+		{
+		  "employee": "64BDEEB8",
+		  "memos": [
+			{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "memoDocNumber": "MEMO-DOC-001",
+			  "memoID": "MEMO-001",
+			  "memoRefID": "7711BBDE",
+			  "memoState": "INITIATE",
+			  "memoStatus": "INITIATE",
+			  "memoType": "KEY001",
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "memoDocNumber": "MEMO-DOC-002",
+			  "memoID": "MEMO-002",
+			  "memoRefID": "55AABBDD",
+			  "memoState": "INITIATE",
+			  "memoStatus": "INITIATE",
+			  "memoType": "KEY001",
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "memoDocNumber": "MEMO-DOC-003",
+			  "memoID": "MEMO-003",
+			  "memoRefID": "884433EE",
+			  "memoState": "INITIATE",
+			  "memoStatus": "INITIATE",
+			  "memoType": "KEY001",
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8"
+			}
+		  ],
+		  "mvDetailID": "MVD-002",
+		  "pkwts": [],
+		  "sks": [
+			{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8",
+			  "skConsiderDesc": [],
+			  "skCopies": [],
+			  "skDocNumber": "SK-DOC-001",
+			  "skID": "SK-001",
+			  "skRefID": "4444DDDD",
+			  "skState": "INITIATE",
+			  "skStatus": "INITIATE",
+			  "skType": "KEY001"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8",
+			  "skConsiderDesc": [],
+			  "skCopies": [],
+			  "skDocNumber": "SK-DOC-002",
+			  "skID": "SK-002",
+			  "skRefID": "3333AAAA",
+			  "skState": "INITIATE",
+			  "skStatus": "INITIATE",
+			  "skType": "KEY001"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8",
+			  "skConsiderDesc": [],
+			  "skCopies": [],
+			  "skDocNumber": "SK-DOC-003",
+			  "skID": "SK-003",
+			  "skRefID": "11119999",
+			  "skState": "INITIATE",
+			  "skStatus": "INITIATE",
+			  "skType": "KEY001"
+			}
+		  ]
+		}
+	  ],
+		"mvDocs": [],
+		"mvBenefitBefore": {
+			"benefitID": "C0D194B6",
+			"benefitName": "BENEFIT NAME",
+			"benefitDetails": []
+		},
+		"mvBenefitAfter": {
+			"benefitID": "936DD188",
+			"benefitName": "BENEFIT NAME",
+			"benefitDetails": []
+		},
+		"mvFacilityBefore": {
+			"facilityID": "BD2A2C95",
+			"facilityName": "FACILITY NAME",
+			"facilityDetails": []
+		},
+		"mvFacilityAfter": {
+			"facilityID": "BF2280B8",
+			"facilityName": "FACILITY NAME",
+			"facilityDetails": []
+		},
+		"mvPayroll": {
+			"basicSalaryBefore": 0.0,
+			"basicSalaryAfter": 0.0,
+			"effectiveStartDate": "14-10-2021",
+			"effectiveEndDate": "14-10-2021"
+		},
+		"mvPosition": {
+			"effectiveStartDateAfter": "14-10-2021",
+			"effectiveEndDateAfter": "14-10-2021",
+			"esBefore": "ES-001",
+			"esAfter": "ES-001",
+			"positionBefore": "1632129563577",
+			"positionAfter": "1632129563577",
+			"levelBefore": "KEY001",
+			"levelAfter": "KEY001",
+			"gradeBefore": "KEY001",
+			"gradeAfter": "KEY001"
+		},
+		"refRecRequest": "1633502605774",
+		"metadata": {
+			"id": "CD5DED83",
+			"es": "ES-001",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": null,
+			"gsoGuestToken": null
+		},
+		"createdBy": "ADMIN",
+		"createdDate": "14-10-2021 20:55:09",
+		"recordID": "409fe9ab-9e3d-4ce6-bf8b-2fd782aa72f1"
+	},{
+		"mvID": "MV-009",
+		"mvNotes": "NOTES",
+		"mvSPKDocNumber": "14-10-2021",
+		"mvEffectiveDate": "14-10-2021",
+		"isFinalApprove": true,
+		"mvStatus": "INITIATE",
+		"mvState": "MV_INITIATE",
+		"mvCase": "KEY001",
+		"mvType": "KEY001",
+		"requestor": "64BDEEB8",
+		"assignment": {
+			"achievement": "ACHIEVEMENT",
+			"assignmentStartDate": "14-10-2021",
+			"assignmentEndDate": "14-10-2021",
+			"assignmentPlace": "ES-001",
+			"assignmentType": "KEY001",
+			"reasonOfProposing": "REaSON OF PROPOSING"
+		},
+		"employees": [
+		{
+		  "employee": "64BDEEB8",
+		  "memos": [
+			{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "memoDocNumber": "MEMO-DOC-001",
+			  "memoID": "MEMO-001",
+			  "memoRefID": "7711BBDE",
+			  "memoState": "INITIATE",
+			  "memoStatus": "INITIATE",
+			  "memoType": "KEY001",
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "memoDocNumber": "MEMO-DOC-002",
+			  "memoID": "MEMO-002",
+			  "memoRefID": "55AABBDD",
+			  "memoState": "INITIATE",
+			  "memoStatus": "INITIATE",
+			  "memoType": "KEY001",
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "memoDocNumber": "MEMO-DOC-003",
+			  "memoID": "MEMO-003",
+			  "memoRefID": "884433EE",
+			  "memoState": "INITIATE",
+			  "memoStatus": "INITIATE",
+			  "memoType": "KEY001",
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8"
+			}
+		  ],
+		  "mvDetailID": "MVD-002",
+		  "pkwts": [],
+		  "sks": [
+			{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8",
+			  "skConsiderDesc": [],
+			  "skCopies": [],
+			  "skDocNumber": "SK-DOC-001",
+			  "skID": "SK-001",
+			  "skRefID": "4444DDDD",
+			  "skState": "INITIATE",
+			  "skStatus": "INITIATE",
+			  "skType": "KEY001"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8",
+			  "skConsiderDesc": [],
+			  "skCopies": [],
+			  "skDocNumber": "SK-DOC-002",
+			  "skID": "SK-002",
+			  "skRefID": "3333AAAA",
+			  "skState": "INITIATE",
+			  "skStatus": "INITIATE",
+			  "skType": "KEY001"
+			},{
+			  "isFinalApprove": true,
+			  "isRevoke": true,
+			  "requestDate": "14-10-2021",
+			  "requestor": "64BDEEB8",
+			  "skConsiderDesc": [],
+			  "skCopies": [],
+			  "skDocNumber": "SK-DOC-003",
+			  "skID": "SK-003",
+			  "skRefID": "11119999",
+			  "skState": "INITIATE",
+			  "skStatus": "INITIATE",
+			  "skType": "KEY001"
+			}
+		  ]
+		}
+	  ],
+		"mvDocs": [],
+		"mvBenefitBefore": {
+			"benefitID": "C0D194B6",
+			"benefitName": "BENEFIT NAME",
+			"benefitDetails": []
+		},
+		"mvBenefitAfter": {
+			"benefitID": "936DD188",
+			"benefitName": "BENEFIT NAME",
+			"benefitDetails": []
+		},
+		"mvFacilityBefore": {
+			"facilityID": "BD2A2C95",
+			"facilityName": "FACILITY NAME",
+			"facilityDetails": []
+		},
+		"mvFacilityAfter": {
+			"facilityID": "BF2280B8",
+			"facilityName": "FACILITY NAME",
+			"facilityDetails": []
+		},
+		"mvPayroll": {
+			"basicSalaryBefore": 0.0,
+			"basicSalaryAfter": 0.0,
+			"effectiveStartDate": "14-10-2021",
+			"effectiveEndDate": "14-10-2021"
+		},
+		"mvPosition": {
+			"effectiveStartDateAfter": "14-10-2021",
+			"effectiveEndDateAfter": "14-10-2021",
+			"esBefore": "ES-001",
+			"esAfter": "ES-001",
+			"positionBefore": "1632129563577",
+			"positionAfter": "1632129563577",
+			"levelBefore": "KEY001",
+			"levelAfter": "KEY001",
+			"gradeBefore": "KEY001",
+			"gradeAfter": "KEY001"
+		},
+		"refRecRequest": "1633502605774",
+		"metadata": {
+			"id": "CD5DED83",
+			"es": "ES-001",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": null,
+			"gsoGuestToken": null
+		},
+		"createdBy": "ADMIN",
+		"createdDate": "14-10-2021 20:55:09",
+		"recordID": "409fe9ab-9e3d-4ce6-bf8b-2fd782aa72f1"
+	}
+]

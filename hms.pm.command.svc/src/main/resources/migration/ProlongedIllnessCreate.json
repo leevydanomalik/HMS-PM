@@ -1,0 +1,51 @@
+[
+	{
+		"piID": "PI-ID003",
+		"startDate": "12-10-2021",
+		"endDate": "12-10-2021",
+		"docURL": "Dokumen URL",
+		"employee": "64BDEEB8",
+		"requestor": "64BDEEB8",
+		"ilnessType": "KEY001",
+		"piStatus": "ACTIVE",
+		"reason": "reason",
+		"metadata": {
+			"id": "D58BDBC8",
+			"es": "1633495445880",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": null,
+			"gsoGuestToken": null
+		},
+		"recordID": "872b3f6d-78aa-4ef0-8db7-07e104587477",
+		"createdBy": "ADMIN",
+		"createdDate": "12-10-2021"
+	},{
+		"piID": "PI-ID004",
+		"startDate": "12-10-2021",
+		"endDate": "12-10-2021",
+		"docURL": "Dokumen URL",
+		"employee": "64BDEEB8",
+		"requestor": "64BDEEB8",
+		"ilnessType": "KEY001",
+		"piStatus": "ACTIVE",
+		"reason": "reason",
+		"metadata": {
+			"id": "D58BDBC8",
+			"es": "1633495445880",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": null,
+			"gsoGuestToken": null
+		},
+		"recordID": "872b3f6d-78aa-4ef0-8db7-07e104587477",
+		"createdBy": "ADMIN",
+		"createdDate": "12-10-2021"
+	}
+]

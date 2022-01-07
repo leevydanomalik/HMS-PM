@@ -1,0 +1,63 @@
+[
+	{
+		"blacklistID": "BL-19",
+		"blacklistSPKNumber": "64E2C800",
+		"blacklistStartDate": "11-10-2021",
+		"blacklistEndDate": "11-10-2021",
+		"blacklistNotes": "NOTES",
+		"blacklistType": "KEY001",
+		"isPermanent": true,
+		"employee": "EMP-111111",
+		"requestor": "EMP-111111",
+		"blacklistDocURL": "Dokumen URL",
+		"isFinalApprove": true,
+		"blacklistStatus": "INITIATE",
+		"blacklistState": "BLACKLIST_INITIATE",
+		"compRegulationChapter": "Regulation Chapter",
+		"compRegulationChapterDesc": "Regulation Chapter Description",
+		"metadata": {
+			"id": "54518635",
+			"es": "ES-001",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": "ABC",
+			"gsoGuestToken": "ABC"
+		},
+		"createdBy": "ADMIN",
+		"createdDate": "11-10-2021 22:15:24",
+		"recordID": "cbd10ed8-eb27-433b-9e99-b31fad04b35c"
+	},{
+		"blacklistID": "BL-20",
+		"blacklistSPKNumber": "64E2C800",
+		"blacklistStartDate": "11-10-2021",
+		"blacklistEndDate": "11-10-2021",
+		"blacklistNotes": "NOTES",
+		"blacklistType": "KEY001",
+		"isPermanent": true,
+		"employee": "EMP-111111",
+		"requestor": "EMP-111111",
+		"blacklistDocURL": "Dokumen URL",
+		"isFinalApprove": true,
+		"blacklistStatus": "INITIATE",
+		"blacklistState": "BLACKLIST_INITIATE",
+		"compRegulationChapter": "Regulation Chapter",
+		"compRegulationChapterDesc": "Regulation Chapter Description",
+		"metadata": {
+			"id": "54518635",
+			"es": "ES-001",
+			"tag": "tag",
+			"type": "KEY001",
+			"version": "version"
+		},
+		"token": {
+			"gsoBizValidToken": "ABC",
+			"gsoGuestToken": "ABC"
+		},
+		"createdBy": "ADMIN",
+		"createdDate": "11-10-2021 22:15:24",
+		"recordID": "cbd10ed8-eb27-433b-9e99-b31fad04b35d"
+	}
+]
