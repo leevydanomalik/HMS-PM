@@ -263,7 +263,7 @@ public class MovementRabbitConsumer {
                     objectMapper.writeValueAsString(movAssembler.toFacilityDTO(dto.getMvFacilityAfter())),
                     objectMapper.writeValueAsString(dto.getMvPayroll()),
                     objectMapper.writeValueAsString(movAssembler.toPositionDTO(dto.getMvPosition())),
-                    objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
+                    dto.getRefRecRequest() == null || dto.getRefRecRequest().equalsIgnoreCase("") ? null : objectMapper.writeValueAsString(movAssembler.toRecRequestDTO(dto.getRefRecRequest())),
                     objectMapper.writeValueAsString(pmAssembler.toMetadata(dto.getMetadata())),
                     objectMapper.writeValueAsString(dto.getToken()),
                     dto.getCreatedBy(),
